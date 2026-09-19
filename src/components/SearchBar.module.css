@@ -1,0 +1,19 @@
+.searchBar {
+  margin-bottom: var(--space-4);
+}
+
+.searchBar input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  color: var(--text-strong);
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--ring);
+}

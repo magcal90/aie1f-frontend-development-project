@@ -1,8 +1,7 @@
-# AIE1F Frontend Development Project
+# Kakeibo (かけいぼ) — Personal Finance Tracker
+## AIE1F Frontend Development Project - Team 3
 
-Group project for the NTU PACE AI Engineering frontend development module.
-
-## Team
+## Team Members
 
 - Ho Wai Hong
 - Choo Yeow Hwee
@@ -11,9 +10,9 @@ Group project for the NTU PACE AI Engineering frontend development module.
 
 ## Technology
 
-- React
+- React +  Vite
 - JavaScript
-- Vite
+- React Router v7
 - Node.js
 
 ## Setup
@@ -22,3 +21,5 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/magcal90/aie1f-frontend-development-project.git
+
+```
