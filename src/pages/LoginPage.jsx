@@ -60,7 +60,7 @@ function LoginPage() {
               className={styles.input}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@simplesystems.io"
+              placeholder="you@team3.io"
               required
               autoFocus
             />
@@ -84,7 +84,7 @@ function LoginPage() {
         </form>
 
         <p className={styles.hint}>
-          Try: daniel@simplesystems.io / password123
+          Try: victor@team3.io / password123
         </p>
       </div>
     </div>

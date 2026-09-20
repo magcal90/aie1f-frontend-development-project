@@ -23,8 +23,8 @@
 }
 .transactionDate,
 .transactionCategory {
-  color: var(--muted);
-  font-size: 0.8rem;
+  color: var(--brand);
+  font-size: 1.0rem;
 }
 .transactionDate {
   font-variant-numeric: tabular-nums;
