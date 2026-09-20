@@ -1,0 +1,77 @@
+/* src/pages/WelcomePage.module.css */
+.page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-page);
+  padding: var(--space-6);
+}
+
+.card {
+  width: 100%;
+  max-width: 384px;
+  text-align: center;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+}
+
+.logoWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-6);
+}
+
+.logoMark {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-500);
+  border-radius: var(--radius-md);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 7px;
+}
+
+.logoMark span {
+  display: block;
+  background: var(--neutral-0);
+  border-radius: 2px;
+}
+
+.heading {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--text-strong);
+  margin-bottom: var(--space-2);
+}
+
+.lead {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+
+.loginBtn {
+  display: inline-block;
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--action-primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.loginBtn:hover {
+  background: var(--action-primary-hover);
+}
