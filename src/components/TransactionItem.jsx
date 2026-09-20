@@ -14,6 +14,7 @@ function TransactionItem({ transaction, onDelete }) {
   return (
     // <li> is an HTML list item. This component is meant to be rendered inside a <ul> list.
     <li className={`${styles.transactionRow} ${typeClass}`}>
+      <span className={styles.transactionDate}>{transaction.date}</span>
       <div className={styles.transactionPrimary}>
         <span className={styles.transactionIcon} aria-hidden="true">
           {isIncome ? 'IN' : 'OUT'}
@@ -23,6 +24,7 @@ function TransactionItem({ transaction, onDelete }) {
           <span className={styles.transactionReference}>Ref. {transaction.id}</span>
         </span>
       </div>
+      <span className={styles.transactionCategory}>{transaction.category}</span>
       <span className={styles.transactionType}>
         <span className={`${styles.typeBadge} ${typeClass}`}>{transaction.type}</span>
       </span>

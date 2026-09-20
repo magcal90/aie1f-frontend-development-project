@@ -11,19 +11,21 @@ export const API_BASE = "http://localhost:3001";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<WelcomePage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="app" element={<RootLayout />}>
-            <Route path="transactions" element={<TransactionsPage />} />
+    <div className="app-root">
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<WelcomePage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="app" element={<RootLayout />}>
+              <Route path="transactions" element={<TransactionsPage />} />
+            </Route>
           </Route>
-        </Route>
-        {/* 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+          {/* 404 */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 

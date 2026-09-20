@@ -17,24 +17,32 @@ function SearchBar() {
   } = useContext(TransactionContext);
 
   return (
-    <div className={styles.searchBar}>
+    <div className={styles.searchBar} role="search">
+      <label className={styles.searchField}>
+        <span className={styles.visuallyHidden}>Search transactions</span>
       <input
         type="text"
         placeholder="Search transactions..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-      />
+        />
+      </label>
 
-      <select
+      <label className={styles.filterField}>
+        <span className={styles.visuallyHidden}>Transaction type</span>
+        <select
         value={typeFilter}
         onChange={(e) => setTypeFilter(e.target.value)}
       >
         <option value="all">All Types</option>
         <option value="income">Income</option>
         <option value="expense">Expense</option>
-      </select>
+        </select>
+      </label>
 
-      <select
+      <label className={styles.filterField}>
+        <span className={styles.visuallyHidden}>Transaction category</span>
+        <select
         value={categoryFilter}
         onChange={(e) => setCategoryFilter(e.target.value)}
       >
@@ -46,9 +54,12 @@ function SearchBar() {
         <option value="Entertainment">Entertainment</option>
         <option value="Utilities">Utilities</option>
         <option value="Others">Others</option>
-      </select>
+        </select>
+      </label>
 
-      <select
+      <label className={styles.filterField}>
+        <span className={styles.visuallyHidden}>Transaction month</span>
+        <select
         value={monthFilter}
         onChange={(e) => setMonthFilter(e.target.value)}
       >
@@ -56,9 +67,12 @@ function SearchBar() {
         <option value="2026-09">Sep 2026</option>
         <option value="2026-08">Aug 2026</option>
         <option value="2026-07">Jul 2026</option>
-      </select>
+        </select>
+      </label>
 
-      <select
+      <label className={styles.filterField}>
+        <span className={styles.visuallyHidden}>Sort transactions</span>
+        <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value)}
       >
@@ -66,7 +80,8 @@ function SearchBar() {
         <option value="date-asc">Oldest First</option>
         <option value="amount-desc">Amount: High to Low</option>
         <option value="amount-asc">Amount: Low to High</option>
-      </select>
+        </select>
+      </label>
     </div>
   );
 }

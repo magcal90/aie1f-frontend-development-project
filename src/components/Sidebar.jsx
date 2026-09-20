@@ -2,7 +2,6 @@
 import { NavLink } from "react-router";
 import { LayoutDashboard, Users, LogOut } from "lucide-react";
 import styles from "./Sidebar.module.css";
-import { Package } from "lucide-react";
 
 // Temporary stand-in for AuthContext's user, replaced in Part 9
 const DUMMY_USER = {

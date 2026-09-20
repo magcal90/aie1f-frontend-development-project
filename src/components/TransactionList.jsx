@@ -9,7 +9,9 @@ function TransactionList({ transactions = [], onDelete }) {
       ) : (
         <>
           <div className={styles.statementColumns} aria-hidden="true">
+            <span>Date</span>
             <span>Description</span>
+            <span>Category</span>
             <span>Type</span>
             <span className={styles.amountColumn}>Amount</span>
             <span className={styles.actionColumn}>Action</span>

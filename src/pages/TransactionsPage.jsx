@@ -5,6 +5,7 @@ import { TransactionContext } from "../contexts/TransactionContext";
 import SearchBar from "../components/SearchBar";
 import TransactionList from "../components/TransactionList";
 import Spinner from "../components/Spinner";
+import styles from "./TransactionsPage.module.css";
 
 function TransactionsPage() {
   const {
@@ -17,33 +18,33 @@ function TransactionsPage() {
   if (loading) return <Spinner />;
 
   if (error) {
-    return <p>Failed to load transactions: {error}</p>;
+    return <p className={styles.statusMessage}>Failed to load transactions: {error}</p>;
   }
 
   return (
-    <main>
-      <div className="page-header">
+    <main className={styles.page}>
+      <div className={styles.pageHeader}>
         <div>
+          <p className={styles.eyebrow}>Money movement</p>
           <h1>Transactions</h1>
-          <p>View and manage your income and expenses.</p>
+          <p className={styles.subtitle}>View and manage your income and expenses.</p>
         </div>
 
-        <Link to="/transactions/new">
+        <Link to="/transactions/new" className={styles.addButton}>
           Add Transaction
         </Link>
       </div>
 
       <SearchBar />
 
-      <p>
+      <p className={styles.resultCount}>
         {displayedTransactions.length} transaction
         {displayedTransactions.length !== 1 ? "s" : ""} found
       </p>
 
-      <TransactionList
-        transactions={displayedTransactions}
-        onDelete={deleteTransaction}
-      />
+      <section className={styles.statementPanel} aria-label="Transaction statement">
+        <TransactionList transactions={displayedTransactions} onDelete={deleteTransaction} />
+      </section>
     </main>
   );
 }

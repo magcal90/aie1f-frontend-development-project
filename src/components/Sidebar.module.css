@@ -70,7 +70,8 @@
   font-weight: var(--weight-medium);
   color: var(--text-body);
   text-decoration: none;
-  transition: background var(--duration-fast) var(--ease-standard),
+  transition:
+    background var(--duration-fast) var(--ease-standard),
     color var(--duration-fast) var(--ease-standard);
 }
 

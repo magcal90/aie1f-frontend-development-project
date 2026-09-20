@@ -1,11 +1,12 @@
 // src/pages/NotFoundPage.jsx
 import { Link, useLocation } from "react-router";
+import styles from "./NotFoundPage.module.css";
 
 function NotFoundPage() {
   const location = useLocation();
 
   return (
-    <div className="status-message">
+    <div className={styles.statusMessage}>
       <h1>404</h1>
       <h2>Page Not Found</h2>
       <p>
