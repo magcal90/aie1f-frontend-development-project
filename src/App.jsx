@@ -1,10 +1,11 @@
-import './App.css'
+import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RootLayout from "./layouts/RootLayout";
 import TransactionsPage from "./pages/TransactionsPage";
+import DashboardPage from "./pages/DashboardPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export const API_BASE = "http://localhost:3001";
@@ -18,6 +19,8 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="app" element={<RootLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="dashboard" element={<DashboardPage />} />
               <Route path="transactions" element={<TransactionsPage />} />
             </Route>
           </Route>
