@@ -1,11 +1,10 @@
 // src/components/ProtectedRoute.jsx
-import { useContext } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
-import { AuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import styles from "./ProtectedRoute.module.css";
 
 function ProtectedRoute({ requiredRole }) {
-  const { user, hasRole } = useContext(AuthContext);
+  const { user, hasRole } = useAuth();
   const location = useLocation();
 
   if (!user) {

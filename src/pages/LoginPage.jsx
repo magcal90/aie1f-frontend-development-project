@@ -1,12 +1,12 @@
 // src/pages/LoginPage.jsx
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { AuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { USERS } from "../../data/users";
 import styles from "./LoginPage.module.css";
 
 function LoginPage() {
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 

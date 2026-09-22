@@ -1,7 +1,6 @@
-import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { NavLink } from "react-router";
-import { LayoutDashboard, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Receipt, LogOut } from "lucide-react";
 import styles from "./Sidebar.module.css";
 
 function initials(name) {
@@ -18,7 +17,7 @@ function navLinkClass({ isActive }) {
 }
 
 function Sidebar() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
 
   return (
     <aside className={styles.sidebar}>
@@ -41,7 +40,7 @@ function Sidebar() {
           <span>Dashboard</span>
         </NavLink>
         <NavLink to="/app/transactions" className={navLinkClass}>
-          <Users size={17} />
+          <Receipt size={17} />
           <span>Transactions</span>
         </NavLink>
       </nav>
