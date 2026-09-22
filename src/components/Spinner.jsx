@@ -3,7 +3,7 @@ import styles from "./Spinner.module.css";
 
 function Spinner({ size = 10 }) {
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} data-testid="spinner">
       <PulseLoader color="var(--primary-500)" size={size} />
     </div>
   );
