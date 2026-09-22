@@ -1,14 +1,8 @@
-// src/components/Sidebar.jsx
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 import { NavLink } from "react-router";
 import { LayoutDashboard, Users, LogOut } from "lucide-react";
 import styles from "./Sidebar.module.css";
-
-// Temporary stand-in for AuthContext's user, replaced in Part 9
-const DUMMY_USER = {
-  name: "Daniel Goh",
-  email: "daniel@simplesystems.io",
-  role: "admin",
-};
 
 function initials(name) {
   return name
@@ -24,7 +18,7 @@ function navLinkClass({ isActive }) {
 }
 
 function Sidebar() {
-  const user = DUMMY_USER;
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <aside className={styles.sidebar}>
@@ -35,12 +29,14 @@ function Sidebar() {
           <span />
           <span />
         </div>
-        <span className={styles.logoText}>Kakeibo (かけいぼ) - Personal Finance Tracker</span>
+        <span className={styles.logoText}>
+          Kakeibo (かけいぼ) - Personal Finance Tracker
+        </span>
       </div>
 
       <nav className={styles.nav}>
         <div className={styles.navLabel}>Workspace</div>
-        <NavLink to="/app" end className={navLinkClass}>
+        <NavLink to="/app/dashboard" className={navLinkClass}>
           <LayoutDashboard size={17} />
           <span>Dashboard</span>
         </NavLink>
@@ -55,16 +51,11 @@ function Sidebar() {
         <div className={styles.footWho}>
           <div className={styles.footName}>{user.name}</div>
           <span
-            className={`${styles.roleBadge} ${user.role === "admin" ? styles.roleBadgeAdmin : styles.roleBadgeUser}`}
-          >
+            className={`${styles.roleBadge} ${user.role === "admin" ? styles.roleBadgeAdmin : styles.roleBadgeUser}`}>
             {user.role}
           </span>
         </div>
-        <button
-          className={styles.signOutBtn}
-          onClick={() => alert("Wired up to real logout in Part 9")}
-          title="Sign out"
-        >
+        <button className={styles.signOutBtn} onClick={logout} title="Sign out">
           <LogOut size={16} />
         </button>
       </div>
