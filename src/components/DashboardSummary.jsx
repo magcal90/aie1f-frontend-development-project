@@ -17,14 +17,14 @@ function DashboardSummary({ transactions = [] }) {
   );
   const netBalance = totals.income - totals.expenses;
   const formatCurrency = (value) =>
-    value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    value.toLocaleString("en-US", { style: "currency", currency: "SGD" });
 
   return (
     <section
       className={`${styles.panel} ${styles.summaryPanel}`}
       aria-label="Balance summary">
       <div className={styles.summaryItem}>
-        <span className={styles.summaryLabel}>Available balance</span>
+        <span className={styles.summaryLabel}>Net balance</span>
         <strong
           className={`${styles.summaryValue} ${netBalance >= 0 ? styles.positive : styles.negative}`}>
           {formatCurrency(netBalance)}

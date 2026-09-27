@@ -9,8 +9,8 @@
 .summaryPanel {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--neutral-700);
+  border-color: var(--neutral-700);
 }
 
 .summaryItem {
@@ -37,14 +37,14 @@
 }
 
 .summaryValue {
-  color: #fff;
+  color: var(--positive-soft);
   font-size: clamp(1.1rem, 2.3vw, 1.6rem);
   font-weight: 800;
   letter-spacing: -0.03em;
 }
 
 .summaryValue.positive {
-  color: #69dcc5;
+  color: #5bf1d3;
 }
 
 .summaryValue.negative {

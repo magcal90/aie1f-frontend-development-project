@@ -40,3 +40,239 @@
 .statMuted {
   color: var(--text-muted);
 }
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.metrics article,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.metrics article {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+
+.metrics article span {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+}
+
+.metrics article strong {
+  color: var(--ink);
+  font-size: 1.5rem;
+}
+
+.panel {
+  margin-top: var(--space-5);
+  padding: var(--space-5);
+}
+
+.panel h2 {
+  margin: 0 0 var(--space-4);
+  color: var(--ink);
+  font-size: 1.2rem;
+}
+
+.months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.months button {
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.months button:hover,
+.months .monthSelected {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.months button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.trendGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.trendGrid h3 {
+  margin: 0 0 var(--space-4);
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+
+.recentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.recentHeader a {
+  color: var(--brand);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+}
+
+.recentHeader a:hover {
+  text-decoration: underline;
+}
+
+.recentRow {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.recentRow:last-child {
+  border-bottom: 0;
+}
+
+.recentRow time {
+  color: var(--positive);
+  font-size: 1rem;
+}
+
+.recentRow span {
+  color: var(--ink);
+}
+
+.recentRow strong {
+  color: inherit;
+  text-align: right;
+}
+
+.income {
+  color: var(--positive);
+}
+
+.expense {
+  color: var(--ink);
+}
+
+.statusMessage {
+  color: var(--negative);
+}
+
+@media (max-width: 760px) {
+  .metrics,
+  .trendGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .recentRow {
+    grid-template-columns: 1fr auto;
+  }
+
+  .recentRow time {
+    grid-column: 1 / -1;
+  }
+}
+
+.categoryChart {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.8fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding-left: 30px;
+}
+
+.pieChart {
+  width: min(100%, 300px);
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+}
+
+.categoryLegend {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 50;
+  list-style: none;
+}
+
+.legendItem {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: center;
+  justify-content: start;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.legendCategory {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+.legendAmount,
+.legendPercent {
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.legendAmount {
+  color: var(--ink);
+}
+
+.legendPercent {
+  color: var(--ink);
+  min-width: 4.5em;
+}
+
+.legendSwatch {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+@media (max-width: 600px) {
+  .categoryChart {
+    grid-template-columns: 1fr;
+    row-gap: 50px;
+    padding-left: 0;
+  }
+
+  .pieChart {
+    width: min(100%, 200px);
+    justify-self: center;
+  }
+}
