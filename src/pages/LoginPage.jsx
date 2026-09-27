@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import { USERS } from "../../data/users";
+import kakeiboLogo from "../assets/kakeibo.png";
 import styles from "./LoginPage.module.css";
 
 function LoginPage() {
@@ -36,12 +37,7 @@ function LoginPage() {
     <div className={styles.page}>
       <div className={styles.card}>
         <div className={styles.logoWrap}>
-          <div className={styles.logoMark}>
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
+          <img className={styles.logoMark} src={kakeiboLogo} alt="Kakeibo" />
         </div>
 
         <h1 className={styles.heading}>Sign in</h1>

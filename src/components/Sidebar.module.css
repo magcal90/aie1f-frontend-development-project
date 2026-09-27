@@ -16,21 +16,11 @@
 }
 
 .logoMark {
-  width: 28px;
-  height: 28px;
-  background: var(--primary-500);
+  width: 80px;
+  height: 80px;
   border-radius: var(--radius-md);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3px;
-  padding: 5px;
-}
-
-.logoMark span {
-  display: block;
-  background: var(--neutral-0);
-  border-radius: 2px;
-  opacity: 0.9;
+  object-fit: cover;
+  flex: none;
 }
 
 .logoText {

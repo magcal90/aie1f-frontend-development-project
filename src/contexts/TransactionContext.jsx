@@ -9,10 +9,30 @@ import { API_BASE } from "../App";
 // eslint-disable-next-line react-refresh/only-export-components
 export const TransactionContext = createContext();
 
+// match a category to a transaction and enrich it with category details
+function enrichTransaction(transaction, categories) {
+  const category = categories.find(
+    (category) => category.id === transaction.categoryId,
+  );
+
+  return {
+    ...transaction,
+    category: category?.name ?? "Unknown",
+    type: category?.type ?? "unknown",
+  };
+}
+
+// enrich a list of transactions with category details
+function enrichTransactions(transactions, categories) {
+  return transactions.map((transaction) =>
+    enrichTransaction(transaction, categories),
+  );
+}
+
 export function TransactionProvider({ children }) {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
   const { transactions, loading, error, submitting, showForm } = state;
-
+  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [typeFilter, setTypeFilter] = useState("all");
@@ -28,7 +48,9 @@ export function TransactionProvider({ children }) {
       typeFilter === "all" ? true : transaction.type === typeFilter,
     )
     .filter((transaction) =>
-      categoryFilter === "all" ? true : transaction.category === categoryFilter,
+      categoryFilter === "all"
+        ? true
+        : transaction.categoryId === categoryFilter,
     )
     .filter((transaction) =>
       monthFilter === "all" ? true : transaction.date.startsWith(monthFilter),
@@ -54,19 +76,47 @@ export function TransactionProvider({ children }) {
     });
 
   useEffect(() => {
-    const loadTransactions = async () => {
+    const loadData = async () => {
       dispatch({ type: "FETCH_START" });
+
       try {
-        // Simulate network delay to show the loading spinner
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        const response = await fetch(`${API_BASE}/transactions`);
-        const data = await response.json();
-        dispatch({ type: "FETCH_SUCCESS", payload: data });
+
+        const [transactionsResponse, categoriesResponse] = await Promise.all([
+          fetch(`${API_BASE}/transactions`),
+          fetch(`${API_BASE}/categories`),
+        ]);
+
+        if (!transactionsResponse.ok) {
+          throw new Error(`Transactions error: ${transactionsResponse.status}`);
+        }
+
+        if (!categoriesResponse.ok) {
+          throw new Error(`Categories error: ${categoriesResponse.status}`);
+        }
+
+        const transactionsData = await transactionsResponse.json();
+        const categoriesData = await categoriesResponse.json();
+
+        const safeTransactions = Array.isArray(transactionsData)
+          ? transactionsData
+          : [];
+        const safeCategories = Array.isArray(categoriesData)
+          ? categoriesData
+          : [];
+
+        setCategories(safeCategories);
+
+        dispatch({
+          type: "FETCH_SUCCESS",
+          payload: enrichTransactions(safeTransactions, safeCategories),
+        });
       } catch (err) {
         dispatch({ type: "FETCH_ERROR", payload: err.message });
       }
     };
-    loadTransactions();
+
+    loadData();
   }, []);
 
   // src/contexts/TransactionContext.jsx
@@ -79,9 +129,14 @@ export function TransactionProvider({ children }) {
         body: JSON.stringify(transactionData),
       });
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
       const createdTransaction = await response.json();
-      dispatch({ type: "ADD_TRANSACTION", payload: createdTransaction });
-      return createdTransaction; // ← ADD THIS LINE
+      const enrichedTransaction = enrichTransaction(
+        createdTransaction,
+        categories,
+      );
+      dispatch({ type: "ADD_TRANSACTION", payload: enrichedTransaction });
+      return enrichedTransaction;
     } catch (err) {
       dispatch({ type: "ADD_ERROR" });
       alert(`Failed to add transaction: ${err.message}`);
@@ -100,9 +155,13 @@ export function TransactionProvider({ children }) {
           body: JSON.stringify(updates),
         },
       );
+
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
       const updated = await response.json();
-      dispatch({ type: "UPDATE_TRANSACTION", payload: updated });
+      const enrichedTransaction = enrichTransaction(updated, categories);
+
+      dispatch({ type: "UPDATE_TRANSACTION", payload: enrichedTransaction });
     } catch (err) {
       alert(`Failed to update transaction: ${err.message}`);
     }
@@ -119,7 +178,9 @@ export function TransactionProvider({ children }) {
         },
       );
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
       dispatch({ type: "DELETE_TRANSACTION", payload: transactionId });
+
       if (selectedId === transactionId) setSelectedId(null);
     } catch (err) {
       alert(`Failed to delete transaction: ${err.message}`);
@@ -130,6 +191,7 @@ export function TransactionProvider({ children }) {
     <TransactionContext.Provider
       value={{
         transactions,
+        categories,
         displayedTransactions,
         loading,
         error,
