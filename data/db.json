@@ -77,6 +77,12 @@
       "type": "expense",
       "icon": "🏠",
       "id": "AxxO6CSoN3w"
+    },
+    {
+      "name": "NetFlix Subscription",
+      "type": "expense",
+      "icon": "🎬",
+      "id": "InuvddU4ajQ"
     }
   ],
   "transactions": [

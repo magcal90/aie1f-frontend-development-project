@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import DashboardSummary from "../components/DashboardSummary";
+import PageHeader from "../components/PageHeader";
 import { TransactionContext } from "../contexts/TransactionContext";
 import Spinner from "../components/Spinner";
 import styles from "./DashboardPage.module.css";
@@ -19,8 +20,11 @@ function DashboardPage() {
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.heading}>Dashboard</h1>
-      <p className={styles.subtitle}>Overview of your finances</p>
+      <PageHeader
+        eyebrow="Financial snapshot"
+        title="Dashboard"
+        subtitle="Overview of your finances"
+      />
 
       <DashboardSummary transactions={transactions} />
     </main>

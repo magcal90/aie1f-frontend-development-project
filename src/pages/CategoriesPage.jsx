@@ -1,6 +1,7 @@
 // src/pages/CategoriesPage.jsx
 import { useState, useMemo, useCallback, useContext } from "react";
 import { TransactionContext } from "../contexts/TransactionContext";
+import PageHeader from "../components/PageHeader";
 import CategorySearchBar from "../components/CategorySearchBar";
 import CategoryList from "../components/CategoryList";
 import AddCategoryForm from "../components/AddCategoryForm";
@@ -26,7 +27,7 @@ function CategoriesPage() {
         !deletedCategoryIds.has(category.id) &&
         category.name.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [categories, addedCategories, search]);
+  }, [categories, addedCategories, deletedCategoryIds, search]);
 
   const assignedCategoryIds = useMemo(
     () => new Set(transactions.map((transaction) => transaction.categoryId)),
@@ -68,41 +69,37 @@ function CategoriesPage() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.titleGroup}>
-          <div>
-            <h1>Category List</h1>
-            <p className={styles.subtitle}>
-              Organize your income and expenses with custom categories.
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className={`${styles.addButton} ${
-            showAddForm ? styles.cancelButton : ""
-          }`}
-          aria-expanded={showAddForm}
-          onClick={() => setShowAddForm((visible) => !visible)}
-        >
-          {showAddForm ? (
-            <>
-              <span className={styles.buttonIcon} aria-hidden="true">
-                ×
-              </span>
-              Cancel
-            </>
-          ) : (
-            <>
-              <span className={styles.buttonIcon} aria-hidden="true">
-                +
-              </span>
-              Add Category
-            </>
-          )}
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="Organization"
+        title="Category List"
+        subtitle="Organize your income and expenses with custom categories."
+        action={
+          <button
+            type="button"
+            className={`${styles.addButton} ${
+              showAddForm ? styles.cancelButton : ""
+            }`}
+            aria-expanded={showAddForm}
+            onClick={() => setShowAddForm((visible) => !visible)}
+          >
+            {showAddForm ? (
+              <>
+                <span className={styles.buttonIcon} aria-hidden="true">
+                  ×
+                </span>
+                Cancel
+              </>
+            ) : (
+              <>
+                <span className={styles.buttonIcon} aria-hidden="true">
+                  +
+                </span>
+                Add Category
+              </>
+            )}
+          </button>
+        }
+      />
 
       {showAddForm && <AddCategoryForm onSuccess={handleCategoryCreated} />}
 
