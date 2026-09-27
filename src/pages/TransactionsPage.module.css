@@ -1,33 +1,6 @@
 .page {
-  width: min(1180px, 100%);
+  width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 24px 0 48px;
-}
-.pageHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 28px;
-}
-.eyebrow {
-  margin: 0 0 6px;
-  color: var(--brand);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.page h1 {
-  margin: 0;
-  color: var(--ink);
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  line-height: 1;
-}
-.subtitle {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 0.95rem;
 }
 .addButton {
   display: inline-flex;
@@ -66,17 +39,7 @@
   color: var(--negative);
 }
 
-@media (max-width: 820px) {
-  .page {
-    padding-top: 8px;
-  }
-}
 @media (max-width: 600px) {
-  .pageHeader {
-    align-items: flex-start;
-    flex-direction: column;
-    margin-bottom: 22px;
-  }
   .addButton {
     width: 100%;
   }

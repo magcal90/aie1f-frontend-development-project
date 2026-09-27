@@ -18,14 +18,11 @@ function TransactionItem({ transaction, onDelete }) {
       <span className={styles.transactionDate}>{transaction.date}</span>
       <div className={styles.transactionPrimary}>
         <span className={styles.transactionIcon} aria-hidden="true">
-          {isIncome ? "IN" : "OUT"}
+          {transaction.categoryIcon || "💰"}
         </span>
         <span>
           <span className={styles.transactionDescription}>
             {transaction.description}
-          </span>
-          <span className={styles.transactionReference}>
-            Ref. {transaction.id}
           </span>
         </span>
       </div>

@@ -1,28 +1,63 @@
 /* src/components/AddCategoryForm.module.css */
 
+.iconPicker {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.iconPickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.iconPickerLabel {
+  color: var(--text-strong);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.iconPickerHint {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.selectedIconPreview {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  font-size: 1.4rem;
+}
+
 .iconGrid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0.5rem;
-  padding: 0.75rem;
-
+  grid-template-columns: repeat(auto-fill, 44px);
+  justify-content: start;
+  gap: var(--space-2);
+  padding: var(--space-3);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--surface-soft);
 }
 
 .iconOption {
+  width: 44px;
+  height: 44px;
   display: grid;
-  width: 42px;
-  height: 42px;
   place-items: center;
-
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-
   background: var(--surface-card);
-  font-size: 1.35rem;
-
+  font-size: 1.3rem;
   cursor: pointer;
   transition:
     border-color var(--duration-fast) var(--ease-standard),
@@ -30,10 +65,15 @@
     transform var(--duration-fast) var(--ease-standard);
 }
 
-.iconOption:hover {
+.iconOption:hover:not(:disabled) {
   border-color: var(--border-default);
   background: var(--surface-hover);
   transform: translateY(-1px);
+}
+
+.iconOption:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .selectedIcon {
@@ -42,22 +82,11 @@
   box-shadow: var(--ring);
 }
 
-.iconPickerHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.selectedIconPreview {
-  font-size: 1.5rem;
-}
-
 @media (max-width: 600px) {
   .iconGrid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
-
 
 .panel {
   margin-top: 8px;

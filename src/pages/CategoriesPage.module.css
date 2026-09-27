@@ -23,53 +23,7 @@
 .page {
   width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 32px;
   color: var(--text-strong);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 28px;
-}
-
-.titleGroup {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.pageIcon {
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
-  padding: 15px;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #eef6ff, #e4efff);
-  box-shadow: inset 0 0 0 1px rgba(35, 104, 197, 0.06);
-}
-
-.pageIcon span {
-  border: 3px solid var(--brand, #2368c5);
-  border-radius: 4px;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.subtitle {
-  margin: 10px 0 0;
-  color: var(--text-muted);
-  font-size: 1rem;
 }
 
 .addButton {
@@ -343,22 +297,6 @@
 }
 
 @media (max-width: 700px) {
-  .page {
-    padding: 20px;
-  }
-
-  .header {
-    align-items: flex-start;
-  }
-
-  .pageIcon {
-    display: none;
-  }
-
-  .subtitle {
-    display: none;
-  }
-
   .toolbar {
     align-items: stretch;
     flex-direction: column;
@@ -378,14 +316,6 @@
 }
 
 @media (max-width: 480px) {
-  .header {
-    gap: 14px;
-  }
-
-  .header h1 {
-    font-size: 2rem;
-  }
-
   .addButton {
     min-height: 44px;
     padding: 0 14px;

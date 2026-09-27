@@ -205,33 +205,42 @@ function AddCategoryForm({ onSuccess }) {
           {errors.type && <p className={styles.fieldError}>{errors.type}</p>}
         </div>
 
-        <div className={styles.iconGrid}>
-          {CATEGORY_ICONS.map(({ icon, label }) => (
-            <button
-              key={label}
-              type="button"
-              className={`${styles.iconOption} ${
-                formData.icon === icon ? styles.selectedIcon : ""
-              }`}
-              onClick={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  icon,
-                }))
-              }
-              title={label}
-              aria-label={`Select ${label} icon`}
-              aria-pressed={formData.icon === icon}
-              disabled={submitting}
-            >
-              {icon}
-            </button>
-          ))}
-        </div>
+        <div className={styles.iconPicker}>
+          <div className={styles.iconPickerHeader}>
+            <div>
+              <p className={styles.iconPickerLabel}>Category icon</p>
+              <p className={styles.iconPickerHint}>
+                Choose an icon for this category
+              </p>
+            </div>
 
-        <div className={styles.iconPickerHeader}>
-          <span>Icon</span>
-          <span className={styles.selectedIconPreview}>{formData.icon}</span>
+            <span className={styles.selectedIconPreview} aria-hidden="true">
+              {formData.icon}
+            </span>
+          </div>
+
+          <div
+            className={styles.iconGrid}
+            role="group"
+            aria-label="Category icons"
+          >
+            {CATEGORY_ICONS.map(({ icon, label }) => (
+              <button
+                key={label}
+                type="button"
+                className={`${styles.iconOption} ${
+                  formData.icon === icon ? styles.selectedIcon : ""
+                }`}
+                onClick={() => setFormData((prev) => ({ ...prev, icon }))}
+                title={label}
+                aria-label={`Select ${label} icon`}
+                aria-pressed={formData.icon === icon}
+                disabled={submitting}
+              >
+                {icon}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className={styles.actions}>

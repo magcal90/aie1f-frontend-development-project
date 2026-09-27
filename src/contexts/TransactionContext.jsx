@@ -1,4 +1,4 @@
-import { createContext, useReducer, useState, useEffect } from "react";
+import { createContext, useMemo, useReducer, useState, useEffect } from "react";
 
 import {
   transactionReducer,
@@ -18,6 +18,7 @@ function enrichTransaction(transaction, categories) {
   return {
     ...transaction,
     category: category?.name ?? "Unknown",
+    categoryIcon: category?.icon ?? "💰",
     type: category?.type ?? "unknown",
   };
 }
@@ -40,48 +41,57 @@ export function TransactionProvider({ children }) {
   const [monthFilter, setMonthFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date-desc");
 
-  const displayedTransactions = transactions
-    .filter((transaction) =>
-      transaction.description.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-    .filter((transaction) =>
-      typeFilter === "all" ? true : transaction.type === typeFilter,
-    )
-    .filter((transaction) =>
-      categoryFilter === "all"
-        ? true
-        : transaction.categoryId === categoryFilter,
-    )
-    .filter((transaction) =>
-      monthFilter === "all" ? true : transaction.date.startsWith(monthFilter),
-    )
-    .sort((a, b) => {
-      if (sortBy === "date-desc") {
-        return new Date(b.date) - new Date(a.date);
-      }
+  const displayedTransactions = useMemo(() => {
+    return transactions
+      .filter((transaction) =>
+        transaction.description
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
+      )
+      .filter((transaction) =>
+        typeFilter === "all" ? true : transaction.type === typeFilter,
+      )
+      .filter((transaction) =>
+        categoryFilter === "all"
+          ? true
+          : transaction.categoryId === categoryFilter,
+      )
+      .filter((transaction) =>
+        monthFilter === "all" ? true : transaction.date.startsWith(monthFilter),
+      )
+      .sort((a, b) => {
+        if (sortBy === "date-desc") {
+          return new Date(b.date) - new Date(a.date);
+        }
 
-      if (sortBy === "date-asc") {
-        return new Date(a.date) - new Date(b.date);
-      }
+        if (sortBy === "date-asc") {
+          return new Date(a.date) - new Date(b.date);
+        }
 
-      if (sortBy === "amount-desc") {
-        return Number(b.amount) - Number(a.amount);
-      }
+        if (sortBy === "amount-desc") {
+          return Number(b.amount) - Number(a.amount);
+        }
 
-      if (sortBy === "amount-asc") {
-        return Number(a.amount) - Number(b.amount);
-      }
+        if (sortBy === "amount-asc") {
+          return Number(a.amount) - Number(b.amount);
+        }
 
-      return 0;
-    });
+        return 0;
+      });
+  }, [
+    transactions,
+    searchTerm,
+    typeFilter,
+    categoryFilter,
+    monthFilter,
+    sortBy,
+  ]);
 
   useEffect(() => {
     const loadData = async () => {
       dispatch({ type: "FETCH_START" });
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
         const [transactionsResponse, categoriesResponse] = await Promise.all([
           fetch(`${API_BASE}/transactions`),
           fetch(`${API_BASE}/categories`),

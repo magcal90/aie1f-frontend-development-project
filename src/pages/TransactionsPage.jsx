@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router";
 
 import { TransactionContext } from "../contexts/TransactionContext";
+import PageHeader from "../components/PageHeader";
 import SearchBar from "../components/SearchBar";
 import TransactionList from "../components/TransactionList";
 import Spinner from "../components/Spinner";
@@ -23,17 +24,16 @@ function TransactionsPage() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.pageHeader}>
-        <div>
-          <p className={styles.eyebrow}>Money movement</p>
-          <h1>Transactions</h1>
-          <p className={styles.subtitle}>View and manage your income and expenses.</p>
-        </div>
-
-        <Link to="/transactions/new" className={styles.addButton}>
-          Add Transaction
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Money movement"
+        title="Transactions"
+        subtitle="View and manage your income and expenses."
+        action={
+          <Link to="/transactions/new" className={styles.addButton}>
+            Add Transaction
+          </Link>
+        }
+      />
 
       <SearchBar />
 
