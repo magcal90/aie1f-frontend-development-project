@@ -24,9 +24,9 @@
 }
 
 .logoMark {
-  width: 40px;
-  height: 40px;
-  background: var(--primary-500);
+  width: 100px;
+  height: 100px;
+  background: var(--primary-100);
   border-radius: var(--radius-md);
   display: grid;
   grid-template-columns: 1fr 1fr;

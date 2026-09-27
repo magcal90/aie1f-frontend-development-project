@@ -22,7 +22,8 @@ export function transactionReducer(state, action) {
       return {
         ...state,
         loading: false,
-        transactions: action.payload,
+        // Guard against a non-array response (e.g. stale/misconfigured API server)
+        transactions: Array.isArray(action.payload) ? action.payload : [],
       };
     }
     case "FETCH_ERROR":
