@@ -42,6 +42,7 @@ function TransactionItem({ transaction, onDelete }) {
         className={styles.deleteButton}
         type="button"
         onClick={() => onDelete(transaction.id)}
+        aria-label={`Delete transaction: ${transaction.description}`}
       >
         <Trash2 className={styles.deleteIcon} aria-hidden="true" />
       </button>
