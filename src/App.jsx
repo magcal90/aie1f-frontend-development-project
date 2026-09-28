@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RootLayout from "./layouts/RootLayout";
 import DashboardPage from "./pages/DashboardPage";
 import TransactionsPage from "./pages/TransactionsPage";
+import NewTransaction from "./pages/NewTransaction";
 import CategoriesPage from "./pages/CategoriesPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -25,6 +26,7 @@ function App() {
               <Route index element={<DashboardPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="transactions" element={<TransactionsPage />} />
+              <Route path="transactions/new" element={<NewTransaction />} />
               <Route path="categories" element={<CategoriesPage />} />
             </Route>
           </Route>
