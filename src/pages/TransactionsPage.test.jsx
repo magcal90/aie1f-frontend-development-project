@@ -6,11 +6,30 @@ import TransactionsPage from "../pages/TransactionsPage";
 function renderTransactionsPage(valueOverrides = {}) {
   const value = {
     displayedTransactions: [
-      { id: 1, date: "2026-09-14", description: "Salary", category: "Salary", type: "income", amount: 2500 },
+      {
+        id: 1,
+        date: "2026-09-14",
+        description: "Salary",
+        category: "Salary",
+        type: "income",
+        amount: 2500,
+      },
     ],
     loading: false,
     error: null,
     deleteTransaction: vi.fn(),
+    searchTerm: "",
+    setSearchTerm: vi.fn(),
+    typeFilter: "all",
+    setTypeFilter: vi.fn(),
+    categoryFilter: "all",
+    setCategoryFilter: vi.fn(),
+    monthFilter: "all",
+    setMonthFilter: vi.fn(),
+    sortBy: "date-desc",
+    setSortBy: vi.fn(),
+    categories: [],
+    transactions: [],
     ...valueOverrides,
   };
 
@@ -19,7 +38,7 @@ function renderTransactionsPage(valueOverrides = {}) {
       <TransactionContext.Provider value={value}>
         <TransactionsPage />
       </TransactionContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -43,6 +62,8 @@ describe("TransactionsPage", () => {
       loading: false,
     });
 
-    expect(screen.getByText(/Failed to load transactions: Network error/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Failed to load transactions: Network error/i),
+    ).toBeInTheDocument();
   });
 });

@@ -16,6 +16,9 @@ const categories = [
 function renderCategoriesPage(valueOverrides = {}) {
   const value = {
     categories,
+    transactions: [],
+    loading: false,
+    error: null,
     ...valueOverrides,
   };
 
@@ -30,7 +33,9 @@ describe("CategoriesPage", () => {
   it("renders categories from context", () => {
     renderCategoriesPage();
 
-    expect(screen.getByRole("heading", { name: "Categories" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Category List" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Salary")).toBeInTheDocument();
     expect(screen.getByText("Food")).toBeInTheDocument();
     expect(screen.getByText("Transport")).toBeInTheDocument();
@@ -41,9 +46,10 @@ describe("CategoriesPage", () => {
   it("filters categories by search text", () => {
     renderCategoriesPage();
 
-    fireEvent.change(screen.getByLabelText(/search by name/i), {
-      target: { value: "food" },
-    });
+    fireEvent.change(
+      screen.getByRole("searchbox", { name: "Search categories by name" }),
+      { target: { value: "food" } },
+    );
 
     expect(screen.getByText("Food")).toBeInTheDocument();
     expect(screen.queryByText("Salary")).not.toBeInTheDocument();
@@ -62,7 +68,7 @@ describe("CategoriesPage", () => {
 
     renderCategoriesPage();
     fireEvent.click(screen.getByRole("button", { name: "Add Category" }));
-    fireEvent.change(screen.getByLabelText("Name"), {
+    fireEvent.change(screen.getByLabelText("Category name"), {
       target: { value: "Travel" },
     });
     fireEvent.change(screen.getByLabelText("Type"), {
