@@ -3,6 +3,10 @@ import { afterEach, vi } from "vitest";
 import { TransactionContext } from "../contexts/TransactionContext";
 import CategoriesPage from "./CategoriesPage";
 
+vi.mock("../App", () => ({
+  API_BASE: "https://6aba3f3b5b549d818d6234a4.mockapi.io/api/v1",
+}));
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -78,7 +82,7 @@ describe("CategoriesPage", () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        "http://localhost:3001/categories",
+        "https://6aba3f3b5b549d818d6234a4.mockapi.io/api/v1/categories",
         expect.objectContaining({ method: "POST" }),
       );
     });

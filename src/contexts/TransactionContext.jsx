@@ -160,7 +160,7 @@ export function TransactionProvider({ children }) {
       const response = await fetch(
         `${API_BASE}/transactions/${transactionId}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updates),
         },
