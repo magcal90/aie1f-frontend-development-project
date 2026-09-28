@@ -6,83 +6,73 @@ import { TransactionContext } from "../contexts/TransactionContext";
 import Spinner from "../components/Spinner";
 import styles from "./DashboardPage.module.css";
 
-function DashboardPage() {
-  const { transactions, loading, error } = useContext(TransactionContext);
-  const today = new Date();
-  const year = today.getFullYear();
-  const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
-  const monthKey = (month) => `${year}-${String(month + 1).padStart(2, "0")}`;
-  const currentTransactions = (transactions || []).filter((t) =>
-    t.date.startsWith(monthKey(today.getMonth())),
+const categoryColors = {
+  Food: "#087f5b",
+  Shopping: "#d97706",
+  Utilities: "#2563eb",
+  Transport: "#b54736",
+  Entertainment: "#0891b2",
+};
+
+const fallbackColors = ["#6d5bd0", "#64748b", "#a16207"];
+
+function money(amount) {
+  return Number(amount || 0).toLocaleString("en-US", {
+    style: "currency",
+    currency: "SGD",
+  });
+}
+
+function colorForCategory(category, index) {
+  return categoryColors[category] ?? fallbackColors[index % fallbackColors.length];
+}
+
+function MonthlyMetrics({ income, expenses, hasIncome }) {
+  return (
+    <section className={styles.metrics} aria-label="This month">
+      <article>
+        <span>This month's balance</span>
+        <strong>{money(income - expenses)}</strong>
+      </article>
+
+      <article>
+        <span>This month's income</span>
+        <strong>{hasIncome ? money(income) : "Pending"}</strong>
+      </article>
+
+      <article>
+        <span>This month's expenses</span>
+        <strong>{money(expenses)}</strong>
+      </article>
+    </section>
   );
-  const selectedTransactions = (transactions || []).filter((t) =>
-    t.date.startsWith(monthKey(selectedMonth)),
+}
+
+function MonthlyTrend({
+  availableMonths,
+  selectedMonth,
+  onMonthChange,
+  categories,
+}) {
+  const categoryTotal = categories.reduce(
+    (total, [, amount]) => total + amount,
+    0,
   );
-  const availableMonths = [
-    ...new Set(
-      (transactions || [])
-        .filter((t) => t.date.startsWith(`${year}-`))
-        .map((t) => Number(t.date.slice(5, 7)) - 1),
-    ),
-  ].sort((a, b) => a - b);
-
-  const activeMonth = availableMonths.includes(selectedMonth)
-    ? selectedMonth
-    : availableMonths.at(-1);
-
-  const sumType = (items, type) =>
-    items
-      .filter((t) => t.type === type)
-      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
-
-  const income = sumType(currentTransactions, "income");
-  const expenses = sumType(currentTransactions, "expense");
-
-  const categories = Object.entries(
-    selectedTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((totals, t) => {
-        totals[t.category] =
-          (totals[t.category] || 0) + (Number(t.amount) || 0);
-        return totals;
-      }, {}),
-  ).sort((a, b) => b[1] - a[1]);
-
-  const categoryTotal = categories.reduce((sum, [, amount]) => sum + amount, 0);
-  // const totalSpent = categoryTotal;
-
-  const recent = [...(transactions || [])]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 5);
-  const money = (amount) =>
-    amount.toLocaleString("en-US", { style: "currency", currency: "SGD" });
-
-  const categoryColors = {
-    Food: "#087f5b",
-    Shopping: "#d97706",
-    Utilities: "#2563eb",
-    Transport: "#b54736",
-    Entertainment: "#0891b2",
-  };
-  const fallbackColors = ["#6d5bd0", "#64748b", "#a16207"];
-
-  const colorForCategory = (category, index) =>
-    categoryColors[category] ?? fallbackColors[index % fallbackColors.length];
 
   let angle = 0;
   const pieSlices = categories.map(([category, amount], index) => {
@@ -97,7 +87,171 @@ function DashboardPage() {
     ? `conic-gradient(${pieSlices.join(", ")})`
     : "var(--border-subtle)";
 
-  if (loading) return <Spinner />;
+  return (
+    <section className={styles.panel} aria-label="Monthly trend">
+      <h2>Monthly Trend</h2>
+
+      <div className={styles.months}>
+        {availableMonths.map((monthIndex) => (
+          <button
+            key={monthIndex}
+            type="button"
+            aria-pressed={selectedMonth === monthIndex}
+            className={
+              selectedMonth === monthIndex ? styles.monthSelected : ""
+            }
+            onClick={() => onMonthChange(monthIndex)}
+          >
+            {monthNames[monthIndex]}
+          </button>
+        ))}
+      </div>
+
+      <h3>Spending by category</h3>
+
+      {categories.length > 0 ? (
+        <div className={styles.categoryChart}>
+          <div
+            className={styles.pieChart}
+            style={{ background: pieBackground }}
+            role="img"
+            aria-label="Spending proportions by category"
+          />
+
+          <ul className={styles.categoryLegend}>
+            {categories.map(([category, amount], index) => {
+              const percent = Math.round((amount / categoryTotal) * 100);
+
+              return (
+                <li className={styles.legendItem} key={category}>
+                  <span
+                    className={styles.legendSwatch}
+                    style={{
+                      backgroundColor: colorForCategory(category, index),
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span className={styles.legendCategory}>{category}</span>
+                  <strong className={styles.legendAmount}>
+                    {money(amount)}
+                  </strong>
+                  <span className={styles.legendPercent}>{percent}%</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+        <p>No expense records for this month.</p>
+      )}
+    </section>
+  );
+}
+
+
+function RecentTransactions({ transactions }) {
+  return (
+    <section className={styles.panel} aria-label="Recent transactions">
+      <div className={styles.recentHeader}>
+        <h2>Recent transactions</h2>
+        <Link to="/app/transactions">View all transactions</Link>
+      </div>
+
+      {transactions.length > 0 ? (
+        transactions.map((transaction) => (
+          <div
+            className={`${styles.recentRow} ${
+              transaction.type === "income" ? styles.income : styles.expense
+            }`}
+            key={transaction.id}
+          >
+            <time dateTime={transaction.date}>{transaction.date}</time>
+            <span>{transaction.description}</span>
+            <strong>
+              {transaction.type === "income" ? "+" : "-"}
+              {money(transaction.amount)}
+            </strong>
+          </div>
+        ))
+      ) : (
+        <p>No transactions yet.</p>
+      )}
+    </section>
+  );
+}
+
+function DashboardPage() {
+  const {
+    transactions: contextTransactions,
+    loading,
+    error,
+  } = useContext(TransactionContext);
+
+  const transactions = Array.isArray(contextTransactions)
+    ? contextTransactions
+    : [];
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+
+  const monthKey = (monthIndex) =>
+    `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+
+  const availableMonths = [
+    ...new Set(
+      transactions
+        .filter((transaction) => transaction.date?.startsWith(`${year}-`))
+        .map((transaction) => Number(transaction.date.slice(5, 7)) - 1)
+        .filter((monthIndex) => monthIndex >= 0 && monthIndex < 12),
+    ),
+  ].sort((a, b) => a - b);
+
+  const activeMonth = availableMonths.includes(selectedMonth)
+    ? selectedMonth
+    : (availableMonths.at(-1) ?? currentMonth);
+
+  const currentTransactions = transactions.filter((transaction) =>
+    transaction.date?.startsWith(monthKey(currentMonth)),
+  );
+
+  const selectedTransactions = transactions.filter((transaction) =>
+    transaction.date?.startsWith(monthKey(activeMonth)),
+  );
+
+  const totalForType = (items, type) =>
+    items
+      .filter((transaction) => transaction.type === type)
+      .reduce(
+        (total, transaction) => total + (Number(transaction.amount) || 0),
+        0,
+      );
+
+  const income = totalForType(currentTransactions, "income");
+  const expenses = totalForType(currentTransactions, "expense");
+  const hasIncome = currentTransactions.some(
+    (transaction) => transaction.type === "income",
+  );
+
+  const categories = Object.entries(
+    selectedTransactions
+      .filter((transaction) => transaction.type === "expense")
+      .reduce((totals, transaction) => {
+        totals[transaction.category] =
+          (totals[transaction.category] || 0) +
+          (Number(transaction.amount) || 0);
+        return totals;
+      }, {}),
+  ).sort((a, b) => b[1] - a[1]);
+
+  const recentTransactions = [...transactions]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5);
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   if (error) {
     return (
@@ -115,108 +269,20 @@ function DashboardPage() {
 
       <DashboardSummary transactions={transactions} />
 
-      <section className={styles.metrics} aria-label="This month">
-        <article>
-          <span>This month's balance</span>
-          <strong>{money(income - expenses)}</strong>
-        </article>
-        <article>
-          <span>This month's income</span>
-          <strong>
-            {currentTransactions.some((t) => t.type === "income")
-              ? money(income)
-              : "Pending"}
-          </strong>
-        </article>
-        <article>
-          <span>This month's expenses</span>
-          <strong>
-            {currentTransactions.some((t) => t.type === "expense")
-              ? money(expenses)
-              : "Pending"}
-          </strong>
-        </article>
-      </section>
+      <MonthlyMetrics
+        income={income}
+        expenses={expenses}
+        hasIncome={hasIncome}
+      />
 
-      <section className={styles.panel} aria-label="Monthly trend">
-        <h2>Monthly Trend</h2>
-        <div className={styles.months}>
-          {availableMonths.map((monthIndex) => (
-            <button
-              key={monthIndex}
-              type="button"
-              aria-pressed={activeMonth === monthIndex}
-              className={activeMonth === monthIndex ? styles.monthSelected : ""}
-              onClick={() => setSelectedMonth(monthIndex)}
-            >
-              {months[monthIndex]}
-            </button>
-          ))}
-        </div>
+      <MonthlyTrend
+        availableMonths={availableMonths}
+        selectedMonth={activeMonth}
+        onMonthChange={setSelectedMonth}
+        categories={categories}
+      />
 
-        <div className={styles.detailRow}>
-          <div className={styles.categoryColumn}>
-            <h3>Spending by category</h3>
-            {categories.length ? (
-              <div className={styles.categoryChart}>
-                <div
-                  className={styles.pieChart}
-                  style={{ background: pieBackground }}
-                  role="img"
-                  aria-label="Spending proportions by category"
-                />
-
-                <ul className={styles.categoryLegend}>
-                  {categories.map(([category, amount], index) => {
-                    const percent = Math.round((amount / categoryTotal) * 100);
-
-                    return (
-                      <li className={styles.legendItem} key={category}>
-                        <span
-                          className={styles.legendSwatch}
-                          style={{
-                            backgroundColor: colorForCategory(category, index),
-                          }}
-                          aria-hidden="true"
-                        />
-                        <span className={styles.legendCategory}>
-                          {category}
-                        </span>
-                        <strong className={styles.legendAmount}>
-                          {money(amount)}
-                        </strong>
-                        <span className={styles.legendPercent}>{percent}%</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ) : (
-              <p>No expense records for this month.</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.panel}>
-        <div className={styles.recentHeader}>
-          <h2>Recent transactions</h2>
-          <Link to="/app/transactions">View all transactions</Link>
-        </div>
-        {recent.map((t) => (
-          <div
-            className={`${styles.recentRow} ${t.type === "income" ? styles.income : styles.expense}`}
-            key={t.id}
-          >
-            <time>{t.date}</time>
-            <span>{t.description}</span>
-            <strong>
-              {t.type === "income" ? "+" : "-"}
-              {money(Number(t.amount) || 0)}
-            </strong>
-          </div>
-        ))}
-      </section>
+      <RecentTransactions transactions={recentTransactions} />
     </main>
   );
 }
