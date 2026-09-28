@@ -54,6 +54,13 @@ function Sidebar() {
           >
             {user.role}
           </span>
+          <span
+            className={`${styles.roleBadge} ${
+              import.meta.env.DEV ? styles.roleBadgeUser : styles.roleBadgeAdmin
+            }`}
+          >
+            {import.meta.env.MODE}
+          </span>
         </div>
         <button className={styles.signOutBtn} onClick={logout} title="Sign out">
           <LogOut size={16} />
