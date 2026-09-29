@@ -29,7 +29,7 @@ function TransactionsPage() {
         title="Transactions"
         subtitle="View and manage your income and expenses."
         action={
-          <Link to="/transactions/new" className={styles.addButton}>
+          <Link to="/app/transactions/new" className={styles.addButton}>
             Add Transaction
           </Link>
         }

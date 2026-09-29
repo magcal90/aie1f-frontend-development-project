@@ -1,0 +1,130 @@
+.page {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 24px 0 48px;
+}
+
+.card {
+  padding: var(--space-8);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.error {
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 10px;
+  color: var(--negative);
+  background: var(--negative-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.fullWidth {
+  grid-column: 1 / -1;
+}
+.label {
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--surface);
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.input::placeholder {
+  color: #9aa4b2;
+}
+.input:focus {
+  border-color: var(--brand);
+  box-shadow: var(--ring);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+.submitButton,
+.cancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+.submitButton {
+  border: none;
+  color: #fff;
+  background: var(--brand);
+  box-shadow: 0 8px 18px rgba(23, 76, 132, 0.2);
+}
+.submitButton:hover:not(:disabled) {
+  background: var(--brand-deep);
+  transform: translateY(-1px);
+}
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.cancelButton {
+  border: 1px solid var(--border-default);
+  color: var(--ink);
+  background: var(--surface);
+}
+.cancelButton:hover {
+  background: var(--surface-hover);
+}
+
+@media (max-width: 820px) {
+  .page {
+    padding-top: 8px;
+  }
+}
+@media (max-width: 600px) {
+  .card {
+    padding: var(--space-5);
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .actions {
+    flex-direction: column-reverse;
+  }
+  .submitButton,
+  .cancelButton {
+    width: 100%;
+  }
+}
