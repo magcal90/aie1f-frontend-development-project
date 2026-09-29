@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import TransactionList from "./TransactionList";
 
 const transactions = [
@@ -20,15 +21,24 @@ const transactions = [
   },
 ];
 
+const renderList = (props) =>
+  render(
+    <MemoryRouter>
+      <TransactionList {...props} />
+    </MemoryRouter>,
+  );
+
 describe("TransactionList", () => {
   it("shows an empty state when there are no transactions", () => {
-    render(<TransactionList transactions={[]} onDelete={vi.fn()} />);
+    renderList({ transactions: [], onDelete: vi.fn() });
 
-    expect(screen.getByText("No transactions match this view.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No transactions match this view."),
+    ).toBeInTheDocument();
   });
 
   it("renders one row per transaction", () => {
-    render(<TransactionList transactions={transactions} onDelete={vi.fn()} />);
+    renderList({ transactions, onDelete: vi.fn() });
 
     expect(screen.getAllByText("Salary")).toHaveLength(2);
     expect(screen.getByText("Groceries")).toBeInTheDocument();
@@ -37,7 +47,7 @@ describe("TransactionList", () => {
   it("calls onDelete with the correct id when Delete is clicked", () => {
     const onDelete = vi.fn();
 
-    render(<TransactionList transactions={transactions} onDelete={onDelete} />);
+    renderList({ transactions, onDelete });
 
     fireEvent.click(screen.getAllByRole("button", { name: /delete/i })[0]);
 

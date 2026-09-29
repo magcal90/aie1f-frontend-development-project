@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 import { TransactionContext } from "../contexts/TransactionContext";
 import CategoriesPage from "./CategoriesPage";
+import { useState } from "react";
 
 vi.mock("../App", () => ({
   API_BASE: "https://6aba3f3b5b549d818d6234a4.mockapi.io/api/v1",
@@ -17,20 +18,26 @@ const categories = [
   { id: "transport", name: "Transport", type: "expense" },
 ];
 
-function renderCategoriesPage(valueOverrides = {}) {
+function TestProvider({ valueOverrides }) {
+  const [cats, setCats] = useState(valueOverrides.categories ?? categories);
   const value = {
-    categories,
     transactions: [],
     loading: false,
     error: null,
     ...valueOverrides,
+    categories: cats,
+    addCategory: (c) => setCats((prev) => [...prev, c]),
+    removeCategory: (id) => setCats((prev) => prev.filter((c) => c.id !== id)),
   };
-
-  return render(
+  return (
     <TransactionContext.Provider value={value}>
       <CategoriesPage />
-    </TransactionContext.Provider>,
+    </TransactionContext.Provider>
   );
+}
+
+function renderCategoriesPage(valueOverrides = {}) {
+  return render(<TestProvider valueOverrides={valueOverrides} />);
 }
 
 describe("CategoriesPage", () => {

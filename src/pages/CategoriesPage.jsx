@@ -11,23 +11,27 @@ import { API_BASE } from "../App";
 
 function CategoriesPage() {
   const [search, setSearch] = useState("");
-  const [addedCategories, setAddedCategories] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const { categories, transactions, loading, error } =
-    useContext(TransactionContext);
-  const [deletedCategoryIds, setDeletedCategoryIds] = useState(() => new Set());
+  const {
+    categories,
+    transactions,
+    loading,
+    error,
+    addCategory,
+    removeCategory,
+  } = useContext(TransactionContext);
 
   const handleSearchChange = useCallback((value) => {
     setSearch(value);
   }, []);
 
-  const filteredCategories = useMemo(() => {
-    return [...categories, ...addedCategories].filter(
-      (category) =>
-        !deletedCategoryIds.has(category.id) &&
+  const filteredCategories = useMemo(
+    () =>
+      categories.filter((category) =>
         category.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [categories, addedCategories, deletedCategoryIds, search]);
+      ),
+    [categories, search],
+  );
 
   const assignedCategoryIds = useMemo(
     () => new Set(transactions.map((transaction) => transaction.categoryId)),
@@ -43,7 +47,7 @@ function CategoriesPage() {
   }
 
   const handleCategoryCreated = (category) => {
-    setAddedCategories((current) => [...current, category]);
+    addCategory(category);
     setShowAddForm(false);
   };
 
@@ -55,13 +59,8 @@ function CategoriesPage() {
       const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
         method: "DELETE",
       });
-
       if (!response.ok) throw new Error("Failed to delete category");
-
-      setDeletedCategoryIds((current) => new Set([...current, categoryId]));
-      setAddedCategories((current) =>
-        current.filter((category) => category.id !== categoryId),
-      );
+      removeCategory(categoryId);
     } catch (error) {
       alert(error.message);
     }
