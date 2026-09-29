@@ -9,6 +9,8 @@ import TransactionsPage from "./pages/TransactionsPage";
 import NewTransaction from "./pages/NewTransaction";
 import CategoriesPage from "./pages/CategoriesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import EditTransactionPage from "./pages/EditTransactionPage";
+
 
 //export const API_BASE = "http://localhost:3001";
 
@@ -27,6 +29,7 @@ function App() {
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="transactions" element={<TransactionsPage />} />
               <Route path="transactions/new" element={<NewTransaction />} />
+              <Route path="transactions/:id/edit" element={<EditTransactionPage />} />
               <Route path="categories" element={<CategoriesPage />} />
             </Route>
           </Route>

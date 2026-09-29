@@ -4,7 +4,7 @@
 
 .statementColumns {
   display: grid;
-  grid-template-columns: minmax(100px, 0.7fr) minmax(180px, 1.6fr) minmax(110px, 0.8fr) minmax(105px, 0.7fr) minmax(110px, 0.7fr) 72px;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(180px, 1.6fr) minmax(110px, 0.8fr) minmax(105px, 0.7fr) minmax(110px, 0.7fr) 96px;
   align-items: center;
   gap: 16px;
   padding: 11px 24px;

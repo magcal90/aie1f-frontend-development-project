@@ -1,6 +1,8 @@
 .transactionRow {
   display: grid;
-  grid-template-columns: minmax(100px, 0.7fr) minmax(180px, 1.6fr) minmax(110px, 0.8fr) minmax(105px, 0.7fr) minmax(110px, 0.7fr) 72px;
+  grid-template-columns:
+    minmax(100px, 0.7fr) minmax(180px, 1.6fr) minmax(110px, 0.8fr)
+    minmax(105px, 0.7fr) minmax(110px, 0.7fr) 96px;
   align-items: center;
   gap: 16px;
   min-height: 74px;
@@ -8,7 +10,6 @@
   border-bottom: 1px solid var(--line);
   transition: background 150ms ease;
 }
-
 .transactionRow:last-child {
   border-bottom: 0;
 }
@@ -24,7 +25,7 @@
 .transactionDate,
 .transactionCategory {
   color: var(--brand);
-  font-size: 1.0rem;
+  font-size: 1rem;
 }
 .transactionDate {
   font-variant-numeric: tabular-nums;
@@ -89,28 +90,44 @@
 .income .transactionAmount {
   color: var(--positive);
 }
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.editButton,
 .deleteButton {
+  display: inline-flex;
+  align-items: center;
   min-height: 34px;
   border: 1px solid transparent;
   border-radius: 8px;
   padding: 0 9px;
   color: var(--muted);
   background: transparent;
-  font: inherit;
-  font-size: 0.73rem;
-  font-weight: 750;
   cursor: pointer;
   transition:
     color 150ms ease,
     background 150ms ease,
     border-color 150ms ease;
 }
+.editButton:hover {
+  border-color: #cfe0f5;
+  color: var(--brand);
+  background: #eef5ff;
+}
 .deleteButton:hover {
   border-color: #f1caca;
   color: var(--negative);
   background: var(--negative-soft);
 }
-
+.editIcon,
+.deleteIcon {
+  width: 16px;
+  height: 16px;
+}
 @media (max-width: 600px) {
   .transactionRow {
     grid-template-columns: minmax(0, 1fr) auto;

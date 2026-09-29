@@ -32,7 +32,7 @@ function enrichTransactions(transactions, categories) {
 
 export function TransactionProvider({ children }) {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
-  const { transactions, loading, error, submitting, showForm } = state;
+  const { transactions, loading, error, submitting } = state;
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState(null);
@@ -153,8 +153,6 @@ export function TransactionProvider({ children }) {
     }
   };
 
-  const toggleForm = () => dispatch({ type: "TOGGLE_FORM" });
-
   const updateTransaction = async (transactionId, updates) => {
     try {
       const response = await fetch(
@@ -172,6 +170,7 @@ export function TransactionProvider({ children }) {
       const enrichedTransaction = enrichTransaction(updated, categories);
 
       dispatch({ type: "UPDATE_TRANSACTION", payload: enrichedTransaction });
+      return enrichedTransaction;
     } catch (err) {
       alert(`Failed to update transaction: ${err.message}`);
     }
@@ -197,6 +196,12 @@ export function TransactionProvider({ children }) {
     }
   };
 
+  const addCategory = (category) =>
+    setCategories((prev) => [...prev, category]);
+
+  const removeCategory = (categoryId) =>
+    setCategories((prev) => prev.filter((c) => c.id !== categoryId));
+
   return (
     <TransactionContext.Provider
       value={{
@@ -206,23 +211,21 @@ export function TransactionProvider({ children }) {
         loading,
         error,
         submitting,
-        showForm,
         searchTerm,
         typeFilter,
         categoryFilter,
         monthFilter,
         sortBy,
-        selectedId,
         addTransaction,
         updateTransaction,
         deleteTransaction,
-        toggleForm,
         setSearchTerm,
         setTypeFilter,
         setCategoryFilter,
         setMonthFilter,
         setSortBy,
-        setSelectedId,
+        addCategory,
+        removeCategory,
       }}
     >
       {children}

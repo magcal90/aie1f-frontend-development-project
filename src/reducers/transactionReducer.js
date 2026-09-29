@@ -4,7 +4,6 @@ export const initialState = {
   loading: false,
   error: null,
   submitting: false,
-  showForm: false,
 };
 
 // Reducer function
@@ -36,15 +35,11 @@ export function transactionReducer(state, action) {
       return {
         ...state,
         submitting: false,
-        showForm: false,
         transactions: [...state.transactions, action.payload],
       };
 
     case "ADD_ERROR":
       return { ...state, submitting: false };
-
-    case "TOGGLE_FORM":
-      return { ...state, showForm: !state.showForm };
 
     case "UPDATE_TRANSACTION":
       return {
