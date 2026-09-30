@@ -159,3 +159,68 @@
   background: var(--surface-hover);
   color: var(--text-strong);
 }
+
+/* Below tablet width the sidebar becomes a top bar: logo + user on one row, links on the next. */
+@media (max-width: 768px) {
+  .sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "logo foot"
+      "nav nav";
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .logo {
+    grid-area: logo;
+    min-width: 0;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 0;
+  }
+
+  .logoMark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav {
+    grid-area: nav;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-1);
+    padding: 0 var(--space-3) var(--space-2);
+  }
+
+  .navLabel {
+    display: none;
+  }
+
+  .navItem {
+    justify-content: center;
+  }
+
+  .foot {
+    grid-area: foot;
+    margin-top: 0;
+    padding: var(--space-2) var(--space-3);
+    border-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .logoText,
+  .footWho {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .navItem {
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 4px;
+    font-size: var(--text-xs);
+  }
+}
