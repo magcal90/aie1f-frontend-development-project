@@ -1,10 +1,12 @@
-import { Trash2 } from "lucide-react";
+import { Trash2, SquarePen } from "lucide-react";
+import { useNavigate } from "react-router";
 import styles from "./TransactionItem.module.css";
 
 // This component receives one transaction object and one onDelete function from its parent.
 // In React, values passed from a parent component are called props.
 
 function TransactionItem({ transaction, onDelete }) {
+  const navigate = useNavigate();
   const isIncome = transaction.type === "income";
   const typeClass = isIncome ? styles.income : styles.expense;
   const formattedAmount = Number(transaction.amount).toLocaleString("en-US", {
@@ -32,20 +34,28 @@ function TransactionItem({ transaction, onDelete }) {
           {transaction.type}
         </span>
       </span>
-      {/* Curly braces let JSX run JavaScript inside the HTML-like markup. */}
       <span className={styles.transactionAmount}>
         {isIncome ? "+" : "-"}
         {formattedAmount}
       </span>
-      {/* <button> is an HTML button. type="button" prevents it from submitting a form. */}
-      <button
-        className={styles.deleteButton}
-        type="button"
-        onClick={() => onDelete(transaction.id)}
-        aria-label={`Delete transaction: ${transaction.description}`}
-      >
-        <Trash2 className={styles.deleteIcon} aria-hidden="true" />
-      </button>
+      <div className={styles.actions}>
+        <button
+          className={styles.editButton}
+          type="button"
+          onClick={() => navigate(`/app/transactions/${transaction.id}/edit`)}
+          aria-label={`Edit transaction: ${transaction.description}`}
+        >
+          <SquarePen className={styles.editIcon} aria-hidden="true" />
+        </button>
+        <button
+          className={styles.deleteButton}
+          type="button"
+          onClick={() => onDelete(transaction.id)}
+          aria-label={`Delete transaction: ${transaction.description}`}
+        >
+          <Trash2 className={styles.deleteIcon} aria-hidden="true" />
+        </button>
+      </div>
     </li>
   );
 }
