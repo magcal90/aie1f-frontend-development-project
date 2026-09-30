@@ -1,0 +1,46 @@
+.page {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+}
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  color: #fff;
+  background: var(--brand);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(23, 76, 132, 0.2);
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+.addButton:hover {
+  background: var(--brand-deep);
+  transform: translateY(-1px);
+}
+.resultCount {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.statementPanel {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.statusMessage {
+  padding: 24px;
+  color: var(--negative);
+}
+
+@media (max-width: 600px) {
+  .addButton {
+    width: 100%;
+  }
+}

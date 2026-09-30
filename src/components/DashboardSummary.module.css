@@ -1,0 +1,52 @@
+.panel {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.summaryPanel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--neutral-700);
+  border-color: var(--neutral-700);
+}
+
+.summaryItem {
+  position: relative;
+  padding: 23px 24px;
+}
+
+.summaryItem + .summaryItem::before {
+  position: absolute;
+  inset: 20px auto 20px 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  content: "";
+}
+
+.summaryLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: #aebdcb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summaryValue {
+  color: var(--positive-soft);
+  font-size: clamp(1.1rem, 2.3vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.summaryValue.positive {
+  color: #5bf1d3;
+}
+
+.summaryValue.negative {
+  color: #ff9f9f;
+}

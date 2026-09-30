@@ -1,0 +1,8 @@
+.statusMessage {
+  margin: 24px auto;
+  padding: 16px 20px;
+  border: 1px solid #f1caca;
+  border-radius: var(--radius-md);
+  color: var(--negative);
+  background: var(--negative-soft);
+}

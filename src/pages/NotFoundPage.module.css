@@ -1,0 +1,25 @@
+.statusMessage {
+  max-width: 680px;
+  margin: 48px auto;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.statusMessage h1 {
+  margin-bottom: 4px;
+  color: var(--brand);
+}
+.statusMessage h2 {
+  margin-bottom: 12px;
+}
+.statusMessage p {
+  margin-bottom: 20px;
+  color: var(--muted);
+}
+.statusMessage a {
+  color: var(--brand);
+  font-weight: 700;
+}

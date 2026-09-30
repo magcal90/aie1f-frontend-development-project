@@ -1,0 +1,42 @@
+.statementBody {
+  width: 100%;
+}
+
+.statementColumns {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(180px, 1.6fr) minmax(110px, 0.8fr) minmax(105px, 0.7fr) minmax(110px, 0.7fr) 96px;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 24px;
+  color: var(--muted);
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.amountColumn {
+  text-align: right;
+}
+.actionColumn {
+  text-align: center;
+}
+.transactionList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.emptyState {
+  margin: 0;
+  padding: 52px 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .statementColumns {
+    display: none;
+  }
+}
