@@ -53,4 +53,12 @@ describe("TransactionList", () => {
 
     expect(onDelete).toHaveBeenCalledWith(1);
   });
+
+  it("disables delete buttons while a delete is pending", () => {
+    renderList({ transactions, onDelete: vi.fn(), deleting: true });
+
+    expect(
+      screen.getAllByRole("button", { name: /delete/i }).every((button) => button.disabled),
+    ).toBe(true);
+  });
 });

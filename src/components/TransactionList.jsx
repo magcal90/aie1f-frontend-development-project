@@ -1,7 +1,7 @@
 import TransactionItem from './TransactionItem'
 import styles from './TransactionList.module.css'
 
-function TransactionList({ transactions = [], onDelete }) {
+function TransactionList({ transactions = [], onDelete, deleting = false }) {
   return (
     <div className={styles.statementBody}>
       {transactions.length === 0 ? (
@@ -22,6 +22,7 @@ function TransactionList({ transactions = [], onDelete }) {
                 key={transaction.id}
                 transaction={transaction}
                 onDelete={onDelete}
+                deleting={deleting}
               />
             ))}
           </ul>

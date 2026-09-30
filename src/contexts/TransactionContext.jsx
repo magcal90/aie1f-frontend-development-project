@@ -1,4 +1,11 @@
-import { createContext, useMemo, useReducer, useState, useEffect } from "react";
+import {
+  createContext,
+  useMemo,
+  useReducer,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 import {
   transactionReducer,
@@ -35,11 +42,12 @@ export function TransactionProvider({ children }) {
   const { transactions, loading, error, submitting } = state;
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
   const [typeFilter, setTypeFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [monthFilter, setMonthFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date-desc");
+  const [deleting, setDeleting] = useState(false);
+  const pendingRequests = useRef(new Set());
 
   const displayedTransactions = useMemo(() => {
     return transactions
@@ -129,31 +137,80 @@ export function TransactionProvider({ children }) {
     loadData();
   }, []);
 
-  // src/contexts/TransactionContext.jsx
   const addTransaction = async (transactionData) => {
-    dispatch({ type: "ADD_START" });
+    const requestKey = "create";
+
+    if (pendingRequests.current.has(requestKey)) return;
+    pendingRequests.current.add(requestKey);
+
+    const temporaryId = `temp-${crypto.randomUUID()}`;
+
+    const optimisticTransaction = {
+      ...enrichTransaction({ ...transactionData, id: temporaryId }, categories),
+      pending: true,
+    };
+
+    // Show the new transaction before the server responds.
+    dispatch({
+      type: "CREATE_OPTIMISTIC",
+      payload: optimisticTransaction,
+    });
+
     try {
       const response = await fetch(`${API_BASE}/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transactionData),
       });
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-      const createdTransaction = await response.json();
-      const enrichedTransaction = enrichTransaction(
-        createdTransaction,
-        categories,
-      );
-      dispatch({ type: "ADD_TRANSACTION", payload: enrichedTransaction });
-      return enrichedTransaction;
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const saved = enrichTransaction(await response.json(), categories);
+
+      // Replace the temporary ID and clear the pending marker.
+      dispatch({
+        type: "CREATE_CONFIRMED",
+        payload: { temporaryId, saved },
+      });
+
+      return saved;
     } catch (err) {
-      dispatch({ type: "ADD_ERROR" });
-      alert(`Failed to add transaction: ${err.message}`);
+      dispatch({
+        type: "CREATE_ROLLBACK",
+        payload: temporaryId,
+      });
+
+      alert(`Transaction could not be saved: ${err.message}`);
+    } finally {
+      pendingRequests.current.delete(requestKey);
     }
   };
 
   const updateTransaction = async (transactionId, updates) => {
+    const requestKey = `transaction-${transactionId}`;
+    const original = transactions.find((item) => item.id === transactionId);
+
+    if (
+      !original ||
+      original.pending ||
+      pendingRequests.current.has(requestKey)
+    ) {
+      return;
+    }
+
+    pendingRequests.current.add(requestKey);
+
+    // Display the edited values immediately.
+    dispatch({
+      type: "UPDATE_TRANSACTION",
+      payload: {
+        ...enrichTransaction({ ...original, ...updates }, categories),
+        pending: true,
+      },
+    });
+
     try {
       const response = await fetch(
         `${API_BASE}/transactions/${transactionId}`,
@@ -164,35 +221,80 @@ export function TransactionProvider({ children }) {
         },
       );
 
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
 
-      const updated = await response.json();
-      const enrichedTransaction = enrichTransaction(updated, categories);
+      const saved = enrichTransaction(await response.json(), categories);
 
-      dispatch({ type: "UPDATE_TRANSACTION", payload: enrichedTransaction });
-      return enrichedTransaction;
+      dispatch({
+        type: "UPDATE_TRANSACTION",
+        payload: saved,
+      });
+
+      return saved;
     } catch (err) {
-      alert(`Failed to update transaction: ${err.message}`);
+      // Restore only this transaction, preserving other changes.
+      dispatch({
+        type: "UPDATE_TRANSACTION",
+        payload: original,
+      });
+
+      alert(`Changes could not be saved and were reverted: ${err.message}`);
+    } finally {
+      pendingRequests.current.delete(requestKey);
     }
   };
 
   const deleteTransaction = async (transactionId) => {
-    if (!window.confirm("Are you sure you want to delete this transaction?"))
+    const deleteRequestKey = "delete";
+    const requestKey = `transaction-${transactionId}`;
+    const index = transactions.findIndex((item) => item.id === transactionId);
+    const original = transactions[index];
+
+    if (
+      !original ||
+      original.pending ||
+      pendingRequests.current.has(requestKey) ||
+      pendingRequests.current.has(deleteRequestKey)
+    ) {
       return;
+    }
+
+    if (!window.confirm("Are you sure you want to delete this transaction?")) {
+      return;
+    }
+
+    pendingRequests.current.add(deleteRequestKey);
+    pendingRequests.current.add(requestKey);
+    setDeleting(true);
+
+    // Remove the transaction before sending the request.
+    dispatch({
+      type: "DELETE_TRANSACTION",
+      payload: transactionId,
+    });
+
     try {
       const response = await fetch(
         `${API_BASE}/transactions/${transactionId}`,
-        {
-          method: "DELETE",
-        },
+        { method: "DELETE" },
       );
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-      dispatch({ type: "DELETE_TRANSACTION", payload: transactionId });
-
-      if (selectedId === transactionId) setSelectedId(null);
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
     } catch (err) {
-      alert(`Failed to delete transaction: ${err.message}`);
+      dispatch({
+        type: "RESTORE_TRANSACTION",
+        payload: { transaction: original, index },
+      });
+
+      alert(`Deletion failed; the transaction was restored: ${err.message}`);
+    } finally {
+      pendingRequests.current.delete(deleteRequestKey);
+      pendingRequests.current.delete(requestKey);
+      setDeleting(false);
     }
   };
 
@@ -211,6 +313,7 @@ export function TransactionProvider({ children }) {
         loading,
         error,
         submitting,
+        deleting,
         searchTerm,
         typeFilter,
         categoryFilter,
