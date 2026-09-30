@@ -7,7 +7,7 @@ import styles from "./NewTransaction.module.css";
 
 // en-CA formats as YYYY-MM-DD in local time, matching the <input type="date"> value
 const today = () => new Date().toLocaleDateString("en-CA");
-const MAX_RECEIPT_SIZE = 10 * 1024 * 1024;
+const MAX_RECEIPT_SIZE = 4 * 1024 * 1024;
 
 const readFileAsDataUrl = (file) =>
   new Promise((resolve, reject) => {
@@ -50,7 +50,7 @@ function NewTransaction() {
       return;
     }
     if (file.size > MAX_RECEIPT_SIZE) {
-      setReceiptError("The image must be 10 MB or smaller.");
+      setReceiptError("The image must be 4 MB or smaller.");
       return;
     }
 
