@@ -28,19 +28,6 @@ export function transactionReducer(state, action) {
     case "FETCH_ERROR":
       return { ...state, loading: false, error: action.payload };
 
-    case "ADD_START":
-      return { ...state, submitting: true };
-
-    case "ADD_TRANSACTION":
-      return {
-        ...state,
-        submitting: false,
-        transactions: [...state.transactions, action.payload],
-      };
-
-    case "ADD_ERROR":
-      return { ...state, submitting: false };
-
     case "UPDATE_TRANSACTION":
       return {
         ...state,
@@ -54,6 +41,47 @@ export function transactionReducer(state, action) {
         ...state,
         transactions: state.transactions.filter((c) => c.id !== action.payload),
       };
+
+    case "CREATE_OPTIMISTIC":
+      return {
+        ...state,
+        submitting: true,
+        transactions: [...state.transactions, action.payload],
+      };
+
+    case "CREATE_CONFIRMED":
+      return {
+        ...state,
+        submitting: false,
+        transactions: state.transactions.map((transaction) =>
+          transaction.id === action.payload.temporaryId
+            ? action.payload.saved
+            : transaction,
+        ),
+      };
+
+    case "CREATE_ROLLBACK":
+      return {
+        ...state,
+        submitting: false,
+        transactions: state.transactions.filter(
+          (transaction) => transaction.id !== action.payload,
+        ),
+      };
+
+    case "RESTORE_TRANSACTION": {
+      const { transaction, index } = action.payload;
+
+      // Prevent accidentally inserting the same item twice.
+      if (state.transactions.some((item) => item.id === transaction.id)) {
+        return state;
+      }
+
+      const transactions = [...state.transactions];
+      transactions.splice(index, 0, transaction);
+
+      return { ...state, transactions };
+    }
 
     default:
       return state;

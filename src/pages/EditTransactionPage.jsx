@@ -56,17 +56,28 @@ function EditTransactionForm({ transaction }) {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (saving || transaction.pending) return;
+
+    const description = form.description.trim();
+
+    if (!description) {
+      alert("Please enter a description.");
+      return;
+    }
+
     setSaving(true);
-    const updated = await updateTransaction(transaction.id, {
+
+    void updateTransaction(transaction.id, {
       date: form.date,
-      description: form.description.trim(),
+      description,
       categoryId: form.categoryId,
       amount: Number(form.amount),
     });
-    if (updated) navigate("/app/transactions");
-    else setSaving(false);
+
+    navigate("/app/transactions");
   };
 
   return (
@@ -162,7 +173,11 @@ function EditTransactionForm({ transaction }) {
         </div>
 
         <div className={styles.editActions}>
-          <button type="submit" className={styles.saveButton} disabled={saving}>
+          <button
+            type="submit"
+            className={styles.saveButton}
+            disabled={saving || transaction.pending}
+          >
             {saving ? "Saving..." : "Save"}
           </button>
           <Link to="/app/transactions" className={styles.cancelButton}>
