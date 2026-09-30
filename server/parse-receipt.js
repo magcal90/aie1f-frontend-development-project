@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 // Shared by the local receipt API (server/receipt-api.js) and the Netlify Function.
 // Netlify caps synchronous function request bodies at 6 MB, and base64 adds ~33%.
 export const MAX_FILE_SIZE = 4 * 1024 * 1024;
@@ -22,7 +24,8 @@ export async function parseReceipt(payload, env) {
       return { status: 400, body: { error: "Upload a valid receipt image." } };
     }
 
-    if (Buffer.from(match[2], "base64").byteLength > MAX_FILE_SIZE) {
+    const fileBytes = Buffer.from(match[2], "base64");
+    if (fileBytes.byteLength > MAX_FILE_SIZE) {
       return { status: 413, body: { error: "The image must be 4 MB or smaller." } };
     }
 
@@ -41,6 +44,8 @@ export async function parseReceipt(payload, env) {
         "Content-Type": "application/json",
         "CLIENT-ID": VERYFI_CLIENT_ID,
         Authorization: `apikey ${VERYFI_USERNAME}:${VERYFI_API_KEY}`,
+        // Same image => same key, so a retry after a timeout returns the original document instead of a billed duplicate.
+        "Idempotency-Key": createHash("sha256").update(fileBytes).digest("hex"),
       },
       body: JSON.stringify({ file_data: fileData, file_name: fileName }),
       signal: AbortSignal.timeout(VERYFI_TIMEOUT_MS),
