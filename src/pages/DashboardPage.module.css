@@ -83,15 +83,20 @@
 
 .recentHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
+}
+
+.recentHeader h2 {
+  min-width: 0;
 }
 
 .recentHeader a {
   color: var(--brand);
   font-weight: var(--weight-medium);
   text-decoration: none;
+  text-align: right;
 }
 
 .recentHeader a:hover {
@@ -235,7 +240,6 @@
     padding-left: 0;
     margin-top: var(--space-6);
   }
-
   .pieChart {
     width: min(100%, 200px);
     justify-self: center;

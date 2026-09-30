@@ -159,8 +159,8 @@ function RecentTransactions({ transactions }) {
   return (
     <section className={styles.panel} aria-label="Recent transactions">
       <div className={styles.recentHeader}>
-        <h2>Recent transactions</h2>
-        <Link to="/app/transactions">View all transactions</Link>
+        <h2>Recent Transactions</h2>
+        <Link to="/app/transactions">View all Transactions</Link>
       </div>
 
       {transactions.length > 0 ? (
