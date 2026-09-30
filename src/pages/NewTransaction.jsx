@@ -37,6 +37,7 @@ function NewTransaction() {
     ? categoryId
     : (typeCategories[0]?.id ?? "");
 
+  const handleSubmit = (e) => {
   const handleReceiptUpload = async (event) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -94,11 +95,18 @@ function NewTransaction() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (submitting) return;
+
     setError(null);
 
     const trimmed = description.trim();
     const numericAmount = Number(amount);
 
+    if (!date) {
+      setError("Please choose a date.");
+      return;
+    }
     if (!trimmed) {
       setError("Please enter a description.");
       return;
@@ -112,14 +120,15 @@ function NewTransaction() {
       return;
     }
 
-    const created = await addTransaction({
+    // Start saving; the context handles success or rollback.
+    void addTransaction({
       date,
       description: trimmed,
       categoryId: selectedCategoryId,
       amount: numericAmount,
     });
 
-    if (created) navigate("/app/transactions");
+    navigate("/app/transactions");
   };
 
   return (

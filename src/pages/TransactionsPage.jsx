@@ -13,6 +13,7 @@ function TransactionsPage() {
     displayedTransactions,
     loading,
     error,
+    deleting,
     deleteTransaction,
   } = useContext(TransactionContext);
 
@@ -43,7 +44,11 @@ function TransactionsPage() {
       </p>
 
       <section className={styles.statementPanel} aria-label="Transaction statement">
-        <TransactionList transactions={displayedTransactions} onDelete={deleteTransaction} />
+        <TransactionList
+          transactions={displayedTransactions}
+          onDelete={deleteTransaction}
+          deleting={deleting}
+        />
       </section>
     </main>
   );

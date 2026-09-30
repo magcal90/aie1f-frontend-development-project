@@ -41,8 +41,8 @@ function LoginPage() {
         </div>
 
         <h1 className={styles.heading}>Sign in</h1>
-        <p className={styles.lead}>Welcome back to Kakeibo (かけいぼ) — Personal Finance Tracker.</p>
-
+        <p className={styles.lead}>Welcome back to Kakeibo (かけいぼ)</p>
+        <p className={styles.lead}>Personal Finance Tracker.</p>
         {error && <div className={styles.error}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
@@ -78,10 +78,6 @@ function LoginPage() {
             Sign in
           </button>
         </form>
-
-        <p className={styles.hint}>
-          Try: victor@team3.io / password123
-        </p>
       </div>
     </div>
   );

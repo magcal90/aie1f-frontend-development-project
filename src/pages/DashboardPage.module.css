@@ -83,15 +83,20 @@
 
 .recentHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
+}
+
+.recentHeader h2 {
+  min-width: 0;
 }
 
 .recentHeader a {
   color: var(--brand);
   font-weight: var(--weight-medium);
   text-decoration: none;
+  text-align: right;
 }
 
 .recentHeader a:hover {
@@ -156,6 +161,7 @@
   grid-template-columns: minmax(140px, 0.8fr) minmax(0, 1fr);
   align-items: center;
   gap: var(--space-3);
+  column-gap: var(--space-8);
   padding-left: 30px;
 }
 
@@ -170,39 +176,21 @@
   display: grid;
   gap: var(--space-3);
   margin: 0;
-  padding: 50;
+  padding: 0;
   list-style: none;
 }
+
 
 .legendItem {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "swatch category amount"
+    ".      percent  .";
   align-items: center;
-  justify-content: start;
-  gap: var(--space-2);
-  padding: var(--space-2) 0;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3) 0;
   border-bottom: 1px solid var(--line);
-}
-
-.legendCategory {
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-}
-
-.legendAmount,
-.legendPercent {
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.legendAmount {
-  color: var(--ink);
-}
-
-.legendPercent {
-  color: var(--ink);
-  min-width: 4.5em;
 }
 
 .legendSwatch {
@@ -210,16 +198,48 @@
   width: 12px;
   height: 12px;
   border-radius: 3px;
+  grid-area: swatch;
+}
+
+.legendCategory {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+  grid-area: category;
+}
+
+.legendAmount,
+.legendPercent {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.legendAmount {
+  text-align: center;
+  grid-area: amount;
+}
+
+/* .legendPercent {
+  color: var(--ink);
+  min-width: 4.5em;
+  grid-area: percent;
+  justify-self: start; 
+} */
+
+.legendPercent {
+  justify-self: start;
+  text-align: left;
+  min-width: 0;
+  grid-area: percent;
 }
 
 @media (max-width: 600px) {
   .categoryChart {
     grid-template-columns: 1fr;
-    row-gap: 50px;
+    row-gap: var(--space-5);
     padding-left: 0;
     margin-top: var(--space-6);
   }
-
   .pieChart {
     width: min(100%, 200px);
     justify-self: center;
