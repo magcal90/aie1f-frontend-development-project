@@ -50,3 +50,15 @@
 .summaryValue.negative {
   color: #ff9f9f;
 }
+
+@media (max-width: 600px) {
+  .summaryPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryItem + .summaryItem::before {
+  inset: 0 20px auto;
+  width: auto;
+  height: 1px;
+}
+}

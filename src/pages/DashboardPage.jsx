@@ -29,7 +29,13 @@ const categoryColors = {
   Entertainment: "#0891b2",
 };
 
-const fallbackColors = ["#6d5bd0", "#64748b", "#a16207"];
+const fallbackColors = [
+  "#6d5bd0",
+  "#e1ff39fe",
+  "#4fd3ff",
+  "#f133d8",
+  "#f9ce8d",
+];
 
 function money(amount) {
   return Number(amount || 0).toLocaleString("en-US", {
