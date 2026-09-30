@@ -1,5 +1,6 @@
 .statementBody {
   width: 100%;
+  container-type: inline-size;
 }
 
 .statementColumns {
@@ -35,7 +36,8 @@
   text-align: center;
 }
 
-@media (max-width: 600px) {
+/* The 6-column table needs ~830px; below that, rows switch to cards (see TransactionItem). */
+@container (max-width: 860px) {
   .statementColumns {
     display: none;
   }

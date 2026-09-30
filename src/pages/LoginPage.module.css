@@ -1,5 +1,6 @@
 .page {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,6 +16,16 @@
   border-radius: var(--radius-lg);
   padding: var(--space-8);
   box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: var(--space-4);
+  }
+
+  .card {
+    padding: var(--space-5);
+  }
 }
 
 .logoWrap {
