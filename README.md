@@ -18,7 +18,8 @@ The target user is someone who wants a lightweight personal budgeting and expens
 
 ## Main Features
 
-- Dashboard summary of income, expenses and balance
+- Dashboard summary of income, expenses, balance and recent transactions
+- Monthly trend showing spending by category in a pie chart
 - Transaction list with category, type, amount and date
 - Add new transactions using a controlled form
 - Edit existing transactions
@@ -246,6 +247,7 @@ VERYFI_API_KEY=
 
 2. Dashboard
 ![Dashboard](docs/images/dashboard.png)
+![Dashboard](docs/images/recenttransactions.png)
 3. Transaction list with search/filter controls
 ![Transactions](docs/images/transactions.png)
 4. Add/Edit Transaction form
