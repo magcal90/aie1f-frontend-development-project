@@ -24,4 +24,10 @@ export default defineConfig([
       globals: { ...globals.vitest, ...globals.node },
     },
   },
+  {
+    files: ["server/**/*.js", "netlify/**/*.js"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ]);

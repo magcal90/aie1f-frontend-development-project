@@ -442,6 +442,27 @@
       "categoryId": "transport",
       "amount": 23,
       "id": "adAQ23yiUB8"
+    },
+    {
+      "date": "2026-09-26",
+      "description": "Banyan Tree Resorts Stay",
+      "categoryId": "0K30FwkSzew",
+      "amount": 1190,
+      "id": "9bl_IuNFpIM"
+    },
+    {
+      "date": "2026-09-12",
+      "description": "思家客 SCARLETT NEX 实龙岗",
+      "categoryId": "food",
+      "amount": 2.1,
+      "id": "vrWrLLJ1_OM"
+    },
+    {
+      "date": "2026-09-25",
+      "description": "GUARDIAN HEALTH & BEAUTY",
+      "categoryId": "food",
+      "amount": 15.65,
+      "id": "jQYreLwxZQg"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -7,6 +7,15 @@ import styles from "./NewTransaction.module.css";
 
 // en-CA formats as YYYY-MM-DD in local time, matching the <input type="date"> value
 const today = () => new Date().toLocaleDateString("en-CA");
+const MAX_RECEIPT_SIZE = 4 * 1024 * 1024;
+
+const readFileAsDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Could not read the selected image."));
+    reader.readAsDataURL(file);
+  });
 
 function NewTransaction() {
   const { addTransaction, submitting, categories } =
@@ -19,13 +28,71 @@ function NewTransaction() {
   const [categoryId, setCategoryId] = useState("");
   const [date, setDate] = useState(today);
   const [error, setError] = useState(null);
+  const [receiptError, setReceiptError] = useState(null);
+  const [receiptMessage, setReceiptMessage] = useState("");
+  const [parsingReceipt, setParsingReceipt] = useState(false);
 
   const typeCategories = categories.filter((c) => c.type === type);
   const selectedCategoryId = typeCategories.some((c) => c.id === categoryId)
     ? categoryId
     : (typeCategories[0]?.id ?? "");
 
-  const handleSubmit = (e) => {
+  const handleReceiptUpload = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setReceiptError(null);
+    setReceiptMessage("");
+
+    if (!file.type.startsWith("image/")) {
+      setReceiptError("Choose an image file.");
+      return;
+    }
+    if (file.size > MAX_RECEIPT_SIZE) {
+      setReceiptError("The image must be 4 MB or smaller.");
+      return;
+    }
+
+    setParsingReceipt(true);
+    try {
+      const fileData = await readFileAsDataUrl(file);
+      const response = await fetch("/api/receipt/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileData, fileName: file.name }),
+      });
+      const receipt = await response.json();
+      if (!response.ok) {
+        throw new Error(receipt.error || "Receipt parsing failed.");
+      }
+
+      let extractedFields = 0;
+      if (receipt.merchant) {
+        setDescription(receipt.merchant.slice(0, 100));
+        extractedFields += 1;
+      }
+      if (Number.isFinite(receipt.amount) && receipt.amount > 0) {
+        setAmount(String(receipt.amount));
+        extractedFields += 1;
+      }
+      if (typeof receipt.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(receipt.date)) {
+        setDate(receipt.date);
+        extractedFields += 1;
+      }
+
+      if (!extractedFields) {
+        throw new Error("No merchant, total, or date was found in that receipt.");
+      }
+      setReceiptMessage("Receipt scanned. Review the details before saving.");
+    } catch (err) {
+      setReceiptError(err.message || "Receipt parsing failed.");
+    } finally {
+      setParsingReceipt(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (submitting) return;
@@ -79,6 +146,27 @@ function NewTransaction() {
         )}
 
         <form onSubmit={handleSubmit} noValidate>
+          <div className={styles.receiptField}>
+            <label className={styles.label} htmlFor="receipt-image">
+              Receipt image
+            </label>
+            <input
+              id="receipt-image"
+              className={styles.input}
+              type="file"
+              accept="image/*"
+              onChange={handleReceiptUpload}
+              disabled={parsingReceipt}
+            />
+            {parsingReceipt && <p role="status">Scanning receipt…</p>}
+            {receiptMessage && <p role="status">{receiptMessage}</p>}
+            {receiptError && (
+              <p className={styles.receiptError} role="alert">
+                {receiptError}
+              </p>
+            )}
+          </div>
+
           <div className={styles.grid}>
             <div className={`${styles.field} ${styles.fullWidth}`}>
               <label className={styles.label} htmlFor="description">
@@ -168,9 +256,13 @@ function NewTransaction() {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={submitting}
+              disabled={submitting || parsingReceipt}
             >
-              {submitting ? "Saving…" : "Save Transaction"}
+              {submitting
+                ? "Saving…"
+                : parsingReceipt
+                  ? "Scanning receipt…"
+                  : "Save Transaction"}
             </button>
           </div>
         </form>

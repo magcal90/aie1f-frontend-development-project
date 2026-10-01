@@ -182,12 +182,19 @@ In one terminal, start JSON Server:
 ```bash
 npm run server
 ```
-
 This serves the `/categories` and `/transactions` resources from `data/db.json`.
+
+
+In a separate terminal, start Veryfi Server
+```bash
+npm run receipt-api
+```
+This activates the receipt scanning service on local server.
+
 
 ### 5. Start the frontend
 
-In a second terminal, run:
+In a new terminal, run:
 
 ```bash
 npm run dev
@@ -222,6 +229,15 @@ Configure the following environment variable on the deployment platform before b
 
 ```text
 VITE_API_BASE_URL=https://YOUR-PROJECT.mockapi.io/api/v1
+```
+
+To run the VeryFi Receipt Scanner API - Create an account at https://www.veryfi.com and fill up these variables
+
+```text
+VERYFI_URL=https://api.veryfi.com/api/v8/partner/documents
+VERYFI_CLIENT_ID=
+VERYFI_USERNAME=
+VERYFI_API_KEY=
 ```
 
 ## Screenshots
