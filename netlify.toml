@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Same URL the React app uses locally (proxied by Vite to server/receipt-api.js).
+[[redirects]]
+  from = "/api/receipt/parse"
+  to = "/.netlify/functions/receipt-parse"
+  status = 200
+
+# SPA fallback so React Router deep links (e.g. /app/transactions) don't 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -27,6 +27,19 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-5);
 }
+.receiptField {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+.receiptField p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.receiptField .receiptError {
+  color: var(--negative);
+}
 .field {
   display: flex;
   flex-direction: column;
