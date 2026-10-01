@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 // Shared by the local receipt API (server/receipt-api.js) and the Netlify Function.
 // Netlify caps synchronous function request bodies at 6 MB, and base64 adds ~33%.
 export const MAX_FILE_SIZE = 4 * 1024 * 1024;
-const VERYFI_URL = "https://api.veryfi.com/api/v8/partner/documents";
+const VERYFI_URL = import.meta.env.VERYFI_URL;
 const VERYFI_TIMEOUT_MS = 25_000;
 
 function getFieldValue(field) {

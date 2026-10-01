@@ -49,7 +49,7 @@ it("shows recent transactions newest first and links to all transactions", () =>
   ).toBeTruthy();
 
   expect(
-    recent.getByRole("link", { name: "View all transactions" }),
+    recent.getByRole("link", { name: /view all transactions/i }),
   ).toHaveAttribute("href", "/app/transactions");
 });
 
