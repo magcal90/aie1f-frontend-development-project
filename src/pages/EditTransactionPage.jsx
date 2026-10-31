@@ -115,7 +115,7 @@ function EditTransactionForm({ transaction }) {
               name="amount"
               inputMode="decimal"
               step="0.01"
-              min="0.01"
+              min={transaction.receiptId ? "0" : "0.01"}
               className={styles.input}
               value={form.amount}
               onChange={handleChange}

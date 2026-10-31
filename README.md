@@ -106,6 +106,126 @@ Kakeibo keeps categories separate from transactions. The transaction references 
 
 This avoids duplicating the transaction type in both the category and transaction records.
 
+### Receipt Purchases
+
+Veryfi receipt scanning now returns line items as well as the merchant, date and
+total. On New Transaction, each purchase can be reviewed, corrected, added or
+removed and assigned an expense category before saving. If no items are returned,
+the existing total-only form remains available. Jev can now suggest categories;
+the user reviews or corrects them before saving.
+
+Each imported purchase is one transaction. Purchases share a `receiptId` and have
+individual `receiptLineId` values. The receipt total is metadata, not an additional
+transaction, so dashboard expenses are not double-counted. Original/reviewed line
+amounts, allocated adjustments, quantity, unit price, merchant, receipt currency,
+subtotal, tax and discount are retained as metadata. Receipt metadata is preserved
+when a purchase is edited, but editing or deleting purchases later does not
+automatically rebalance the other purchases from that receipt.
+
+#### Tax and Discount Policy
+
+The default is a personal-budgeting, gross-cost policy:
+
+- Use the printed line total, not quantity multiplied by unit price. The printed
+  total can already include a line discount or tax.
+- Compare the reviewed item totals with the receipt's final total. Their difference
+  is the net adjustment, which may include taxes, discounts, tips, fees or rounding.
+- After explicit user approval, distribute that net adjustment proportionally to
+  reviewed line totals. Largest-remainder rounding assigns leftover cents
+  deterministically so all saved purchases sum exactly to the receipt total.
+- Printed tax and discount fields are reference metadata; they are not added or
+  deducted again. Tax-inclusive prices therefore do not receive tax twice.
+- An unexplained difference may indicate missing or misread purchases. Correct the
+  rows before approving allocation. A negative coupon/discount-only row must be
+  removed and accounted for in the net adjustment, or folded into the applicable
+  purchase total. Zero-cost purchases are supported; negative purchase/refund
+  transactions are not supported by this import workflow.
+- Money uses two-decimal minor units. There is no currency conversion or
+  multi-currency dashboard; use receipts in the budgeting currency. Other currency
+  precision rules are not supported yet.
+
+Common alternatives are item-specific allocation (for restricted coupons or
+different tax rates), separate fee/tax transactions, and net-cost accounting with
+recoverable GST/VAT recorded separately. Those require an explicit policy and
+additional accounting fields; proportional allocation is not a tax-return or
+recoverable-tax calculation.
+
+#### Saving and Recovery
+
+The configured JSON Server/MockAPI endpoint must persist and return receipt
+metadata, including `receiptId` and `receiptLineId`. For MockAPI, add these and the
+other receipt metadata fields to the transactions resource schema if needed.
+
+Purchases are saved sequentially, not atomically. A failed receipt import keeps
+confirmed purchases and allows retrying only the remaining rows, with receipt
+editing locked. After a failed POST, the app queries transactions to detect a
+purchase that was committed despite a lost response. If verification also fails,
+retry is blocked and the user must check Transactions before importing again.
+This assumes read-after-write consistency from the demo backend. A production
+backend should provide transactional batch saves and server-side idempotency.
+Uploading the same receipt as a new import is not deduplicated across sessions.
+
+#### Jev Category Suggestions
+
+After scanning a receipt, select **Suggest Categories** to classify the reviewed
+purchases using TypeSafe AI's Jev Choice API. One request contains one question per
+purchase and the existing expense categories, plus an Unclassified option.
+Income categories are never proposed. Up to 100 purchases and 254 expense
+categories are supported per request.
+
+Only the merchant text, purchase descriptions and category names/definitions are
+sent to TypeSafe. Images, dates, purchase amounts and authentication information
+are not included in the classification state. Calling this action sends receipt
+text to an external provider and may incur API charges. Review TypeSafe's privacy
+and retention terms before using personal receipts. There is no automatic API
+call after upload and no automatic saving.
+
+The initial policy prefills empty category fields when Jev confidence is at least
+0.8 and the chosen option probability is at least 0.8. These are distinct metrics:
+confidence measures separation from an even distribution; it is not a percentage
+accuracy guarantee. Calibrate thresholds against labeled receipts before relying
+on automatic prefilling. All purchases still require the final review checkbox.
+Lower-confidence suggestions remain visible with **Needs review** and can be
+explicitly accepted. Unclassified results leave the category blank.
+
+Manual selections and explicitly accepted suggestions are never overwritten by a
+new suggestion request. Refreshing suggestions replaces or clears previous
+automatic prefills. Changing a purchase description or merchant invalidates its
+AI suggestions and related AI-selected category, while keeping manual choices.
+Unavailable credentials, provider errors and invalid responses leave manual
+category selection available. Categories may optionally include a `description`
+field in the backing API to distinguish overlapping category names; the current
+category editor does not edit these definitions.
+
+Saved purchases include `receiptCategorySource` (`manual`, `jev`, or
+`jev-reviewed`) and `receiptCategorySuggestion` with model, proposed category,
+confidence and chosen-option probability. Configure these metadata fields in
+MockAPI as needed. They capture import-time provenance; subsequent manual edits
+do not rewrite the original suggestion.
+
+Configure the following **server-only** variables in `.env` for the local
+`npm run receipt-api` command, or in the Netlify Functions environment:
+
+```env
+TYPESAFE_API_KEY=YOUR_KEY
+TYPESAFE_MODEL=jev-latest
+TYPESAFE_MIN_CONFIDENCE=0.8
+```
+
+Obtain an API key from https://console.typesafe.ai/keys and enter it locally; do
+not commit it or give it a `VITE_` prefix. Restart the receipt API after setting
+the variables. The current script loads `.env`, not `.env.local`. The default
+model alias can be replaced with a supported pinned version for reproducibility.
+
+The local and deployed clients both call `POST /api/receipt/categorize`; the
+local route is handled by the existing receipt API on port 3002, and Netlify uses
+the `receipt-categorize` function. Specific API redirects must precede the SPA
+fallback in both deployment redirect configurations. The API key never enters
+the frontend bundle. Provider contract and UI tests use mocked responses; live
+Jev accuracy, credentials and deployment are not verified by those tests.
+The demo endpoint has no production authentication or billing rate limits; add
+both before exposing a paid provider key to public traffic.
+
 ## Application Structure
 
 The application is organised into pages, reusable components, context and reducer logic.

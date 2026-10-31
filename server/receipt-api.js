@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { MAX_FILE_SIZE, parseReceipt } from "./parse-receipt.js";
+import { categorizeReceipt, MAX_CATEGORIZATION_REQUEST_SIZE } from "./categorize-receipt.js";
 
 const PORT = Number(process.env.RECEIPT_API_PORT || 3002);
 const MAX_REQUEST_SIZE = Math.ceil(MAX_FILE_SIZE * 1.4);
@@ -9,14 +10,14 @@ function sendJson(response, status, data) {
   response.end(JSON.stringify(data));
 }
 
-async function readJson(request) {
+async function readJson(request, limit = MAX_REQUEST_SIZE, sizeError = "The image must be 4 MB or smaller.") {
   const chunks = [];
   let size = 0;
 
   for await (const chunk of request) {
     size += chunk.length;
-    if (size > MAX_REQUEST_SIZE) {
-      const error = new Error("The image must be 4 MB or smaller.");
+    if (size > limit) {
+      const error = new Error(sizeError);
       error.status = 413;
       throw error;
     }
@@ -28,23 +29,26 @@ async function readJson(request) {
 
 const server = createServer(async (request, response) => {
   const requestUrl = new URL(request.url, "http://localhost");
-  if (request.method !== "POST" || requestUrl.pathname !== "/api/receipt/parse") {
+  const categorizing = requestUrl.pathname === "/api/receipt/categorize";
+  if (request.method !== "POST" || (!categorizing && requestUrl.pathname !== "/api/receipt/parse")) {
     sendJson(response, 404, { error: "Not found." });
     return;
   }
 
   let payload;
   try {
-    payload = await readJson(request);
+    payload = categorizing
+      ? await readJson(request, MAX_CATEGORIZATION_REQUEST_SIZE, "Category suggestion request is too large.")
+      : await readJson(request);
   } catch (error) {
     const status = error.status || 400;
     sendJson(response, status, {
-      error: status === 413 ? error.message : "Upload a valid receipt image.",
+      error: status === 413 ? error.message : categorizing ? "Supply a valid category suggestion request." : "Upload a valid receipt image.",
     });
     return;
   }
 
-  const { status, body } = await parseReceipt(payload, process.env);
+  const { status, body } = await (categorizing ? categorizeReceipt : parseReceipt)(payload, process.env);
   sendJson(response, status, body);
 });
 

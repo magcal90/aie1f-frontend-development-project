@@ -9,6 +9,11 @@
   to = "/.netlify/functions/receipt-parse"
   status = 200
 
+[[redirects]]
+  from = "/api/receipt/categorize"
+  to = "/.netlify/functions/receipt-categorize"
+  status = 200
+
 # SPA fallback so React Router deep links (e.g. /app/transactions) don't 404.
 [[redirects]]
   from = "/*"
