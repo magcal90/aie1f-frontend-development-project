@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 // Shared by the local receipt API (server/receipt-api.js) and the Netlify Function.
 // Netlify caps synchronous function request bodies at 6 MB, and base64 adds ~33%.
 export const MAX_FILE_SIZE = 4 * 1024 * 1024;
-const VERYFI_URL = import.meta.env.VERYFI_URL;
 const VERYFI_TIMEOUT_MS = 25_000;
 
 function getFieldValue(field) {
@@ -11,6 +10,13 @@ function getFieldValue(field) {
     return field.value;
   }
   return field;
+}
+
+function getNumber(field) {
+  const value = getFieldValue(field);
+  if (value == null || value === "" || typeof value === "boolean") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
 export async function parseReceipt(payload, env) {
@@ -37,7 +43,7 @@ export async function parseReceipt(payload, env) {
       };
     }
 
-    const veryfiResponse = await fetch(VERYFI_URL, {
+    const veryfiResponse = await fetch(env.VERYFI_URL || "https://api.veryfi.com/api/v8/partner/documents", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -64,6 +70,19 @@ export async function parseReceipt(payload, env) {
     const amount = amountValue == null ? null : Number(amountValue);
     const dateValue = getFieldValue(document.date);
     const date = typeof dateValue === "string" ? dateValue.slice(0, 10) : "";
+    const currency = getFieldValue(document.currency_code);
+    const items = (Array.isArray(document.line_items) ? document.line_items : [])
+      .map((item) => {
+        const description = getFieldValue(item?.description);
+        return {
+          description: typeof description === "string" ? description.trim() : "",
+          quantity: getNumber(item?.quantity),
+          unitPrice: getNumber(item?.price),
+          amount: getNumber(item?.total),
+          tax: getNumber(item?.tax),
+          discount: getNumber(item?.discount),
+        };
+      });
 
     return {
       status: 200,
@@ -71,6 +90,11 @@ export async function parseReceipt(payload, env) {
         merchant: typeof merchant === "string" ? merchant.trim() : "",
         amount: Number.isFinite(amount) ? amount : null,
         date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : "",
+        currency: typeof currency === "string" ? currency : "",
+        subtotal: getNumber(document.subtotal),
+        tax: getNumber(document.tax),
+        discount: getNumber(document.discount),
+        items,
       },
     };
   } catch (error) {

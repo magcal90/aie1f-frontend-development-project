@@ -1,2 +1,4 @@
 # public/_redirects
+/api/receipt/parse  /.netlify/functions/receipt-parse  200
+/api/receipt/categorize  /.netlify/functions/receipt-categorize  200
 /*  /index.html  200

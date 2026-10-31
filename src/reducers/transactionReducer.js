@@ -42,6 +42,28 @@ export function transactionReducer(state, action) {
         transactions: state.transactions.filter((c) => c.id !== action.payload),
       };
 
+    case "CREATE_BATCH_START":
+      return {
+        ...state,
+        submitting: true,
+        transactions: [...state.transactions, ...action.payload],
+      };
+
+    case "CREATE_BATCH_ITEM_CONFIRMED":
+      return {
+        ...state,
+        transactions: state.transactions.map((transaction) =>
+          transaction.id === action.payload.temporaryId ? action.payload.saved : transaction,
+        ),
+      };
+
+    case "CREATE_BATCH_FINISHED":
+      return {
+        ...state,
+        submitting: false,
+        transactions: state.transactions.filter((transaction) => !action.payload.includes(transaction.id)),
+      };
+
     case "CREATE_OPTIMISTIC":
       return {
         ...state,

@@ -188,6 +188,61 @@ export function TransactionProvider({ children }) {
     }
   };
 
+  const addTransactions = async (transactionData) => {
+    const requestKey = "create";
+    if (pendingRequests.current.has(requestKey)) {
+      return { saved: [], error: "Another purchase is being saved. Try again shortly." };
+    }
+    pendingRequests.current.add(requestKey);
+    const drafts = transactionData.map((transaction) => ({
+      ...enrichTransaction({ ...transaction, id: `temp-${crypto.randomUUID()}` }, categories),
+      pending: true,
+    }));
+    const saved = [];
+    let uncertain = false;
+    dispatch({ type: "CREATE_BATCH_START", payload: drafts });
+    try {
+      for (const [index, transaction] of transactionData.entries()) {
+        let record;
+        try {
+          const response = await fetch(`${API_BASE}/transactions`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(transaction),
+          });
+          if (!response.ok) throw new Error(`Server error: ${response.status}`);
+          record = await response.json();
+        } catch (mutationError) {
+          try {
+            const response = await fetch(`${API_BASE}/transactions`);
+            if (!response.ok) throw new Error("Could not verify the saved purchases.", { cause: mutationError });
+            const records = await response.json();
+            if (!Array.isArray(records)) throw new Error("Could not verify the saved purchases.", { cause: mutationError });
+            record = records.find((candidate) =>
+              candidate.receiptId === transaction.receiptId &&
+              candidate.receiptLineId === transaction.receiptLineId,
+            );
+          } catch {
+            uncertain = true;
+          }
+          if (!record) throw mutationError;
+        }
+        const enriched = enrichTransaction({ ...transaction, ...record }, categories);
+        saved.push(enriched);
+        dispatch({
+          type: "CREATE_BATCH_ITEM_CONFIRMED",
+          payload: { temporaryId: drafts[index].id, saved: enriched },
+        });
+      }
+      return { saved, error: null };
+    } catch (error) {
+      return { saved, error: error.message, uncertain };
+    } finally {
+      dispatch({ type: "CREATE_BATCH_FINISHED", payload: drafts.slice(saved.length).map((draft) => draft.id) });
+      pendingRequests.current.delete(requestKey);
+    }
+  };
+
   const updateTransaction = async (transactionId, updates) => {
     const requestKey = `transaction-${transactionId}`;
     const original = transactions.find((item) => item.id === transactionId);
@@ -212,12 +267,17 @@ export function TransactionProvider({ children }) {
     });
 
     try {
+      const receiptMetadata = original.receiptId
+        ? Object.fromEntries(Object.entries(original).filter(([key]) =>
+          key.startsWith("receipt") || ["merchant", "quantity", "unitPrice"].includes(key),
+        ))
+        : {};
       const response = await fetch(
         `${API_BASE}/transactions/${transactionId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
+          body: JSON.stringify({ ...receiptMetadata, ...updates }),
         },
       );
 
@@ -320,6 +380,7 @@ export function TransactionProvider({ children }) {
         monthFilter,
         sortBy,
         addTransaction,
+        addTransactions,
         updateTransaction,
         deleteTransaction,
         setSearchTerm,

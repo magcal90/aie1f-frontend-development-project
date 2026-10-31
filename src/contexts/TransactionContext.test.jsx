@@ -68,6 +68,7 @@ function TransactionProbe() {
     loading,
     deleting,
     addTransaction,
+    addTransactions,
     updateTransaction,
     deleteTransaction,
   } = useContext(TransactionContext);
@@ -77,6 +78,10 @@ function TransactionProbe() {
   return (
     <>
       <button onClick={() => void addTransaction(newTransaction)}>Create</button>
+      <button onClick={() => void addTransactions([
+        { ...newTransaction, receiptId: "receipt-1", receiptLineId: "line-1" },
+        { ...newTransaction, description: "Tea", receiptId: "receipt-1", receiptLineId: "line-2" },
+      ])}>Create receipt</button>
       <button
         onClick={() =>
           void updateTransaction("tx-1", { description: "Updated" })
@@ -133,6 +138,62 @@ afterEach(() => {
 });
 
 describe("TransactionProvider optimistic mutations", () => {
+  it("saves every receipt item sequentially and blocks duplicate submissions", async () => {
+    const { mutation, fetchMock } = await renderProvider([]);
+    fireEvent.click(screen.getByRole("button", { name: "Create receipt" }));
+    fireEvent.click(screen.getByRole("button", { name: "Create receipt" }));
+    expect(screen.getByTestId("transaction-count")).toHaveTextContent("2");
+    expect(fetchMock.mock.calls.filter(([, options]) => options?.method === "POST")).toHaveLength(1);
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ...newTransaction, id: "tea", description: "Tea" }));
+    await act(async () => {
+      mutation.resolve(jsonResponse({ ...newTransaction, id: "coffee" }));
+    });
+    await waitFor(() => expect(screen.queryByText("Saving…")).not.toBeInTheDocument());
+    expect(fetchMock.mock.calls.filter(([, options]) => options?.method === "POST")).toHaveLength(2);
+    expect(screen.getByText("Coffee")).toBeInTheDocument();
+    expect(screen.getByText("Tea")).toBeInTheDocument();
+  });
+
+  it("keeps confirmed receipt items and removes unsaved optimistic items after failure", async () => {
+    const { mutation, fetchMock } = await renderProvider([]);
+    fireEvent.click(screen.getByRole("button", { name: "Create receipt" }));
+    fetchMock.mockRejectedValueOnce(new Error("network failure"));
+    fetchMock.mockResolvedValueOnce(jsonResponse([]));
+    await act(async () => {
+      mutation.resolve(jsonResponse({ ...newTransaction, id: "coffee", receiptLineId: "line-1" }));
+    });
+    await waitFor(() => expect(screen.queryByText("Tea")).not.toBeInTheDocument());
+    expect(screen.getByText("Coffee")).toBeInTheDocument();
+    expect(screen.getByTestId("transaction-count")).toHaveTextContent("1");
+  });
+
+  it("recovers a committed purchase after a lost POST response without posting it again", async () => {
+    const { mutation, fetchMock } = await renderProvider([]);
+    fireEvent.click(screen.getByRole("button", { name: "Create receipt" }));
+    fetchMock.mockResolvedValueOnce(jsonResponse([
+      { ...newTransaction, id: "coffee", receiptId: "receipt-1", receiptLineId: "line-1" },
+    ]));
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ...newTransaction, id: "tea", description: "Tea" }));
+    await act(async () => {
+      mutation.reject(new Error("lost response"));
+    });
+    await waitFor(() => expect(screen.queryByText("Saving…")).not.toBeInTheDocument());
+    expect(screen.getByTestId("transaction-count")).toHaveTextContent("2");
+    expect(fetchMock.mock.calls.filter(([, options]) => options?.method === "POST")).toHaveLength(2);
+  });
+
+  it("preserves receipt metadata when an imported purchase is edited", async () => {
+    const { mutation, fetchMock } = await renderProvider([
+      { ...initialTransactions[0], receiptId: "receipt-1", receiptLineId: "line-1", receiptTotal: 10.9, quantity: 2 },
+    ]);
+    fireEvent.click(screen.getByRole("button", { name: "Update" }));
+    const body = JSON.parse(fetchMock.mock.calls.at(-1)[1].body);
+    expect(body).toEqual({
+      description: "Updated", receiptId: "receipt-1", receiptLineId: "line-1", receiptTotal: 10.9, quantity: 2,
+    });
+    await act(async () => mutation.resolve(jsonResponse({ ...initialTransactions[0], ...body })));
+  });
+
   it("shows a created transaction before the request resolves and confirms it on success", async () => {
     const { mutation, fetchMock } = await renderProvider([]);
 
